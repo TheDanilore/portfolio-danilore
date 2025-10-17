@@ -120,14 +120,14 @@ onMounted(() => {
 /* Responsive */
 @media (max-width: 768px) {
     .mask-text {
-        font-size: 60px;
+        font-size: 50px;
         letter-spacing: 6px;
     }
 }
 
 @media (max-width: 480px) {
     .mask-text {
-        font-size: 40px;
+        font-size: 20px;
         letter-spacing: 3px;
     }
     
