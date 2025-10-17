@@ -5,18 +5,13 @@
             <svg class="svg-mask" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
                 <defs>
                     <mask id="textMask">
-                        <rect width="100%" height="100%" fill="white"/>
-                        <text 
-                            x="50%" 
-                            y="50%" 
-                            text-anchor="middle" 
-                            dominant-baseline="middle"
-                            class="mask-text"
-                        >DANILORE DEV</text>
+                        <rect width="100%" height="100%" fill="white" />
+                        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="mask-text">DANILORE
+                            DEV</text>
                     </mask>
                 </defs>
                 <!-- Rectángulo negro con máscara de texto que cubre todo -->
-                <rect width="100%" height="100%" fill="#000000" mask="url(#textMask)"/>
+                <rect width="100%" height="100%" fill="#000000" mask="url(#textMask)" />
             </svg>
         </div>
     </Transition>
@@ -120,19 +115,27 @@ onMounted(() => {
 /* Responsive */
 @media (max-width: 768px) {
     .mask-text {
+        font-weight: 600;
         font-size: 50px;
-        letter-spacing: 6px;
+        letter-spacing: 4px;
     }
 }
 
 @media (max-width: 480px) {
     .mask-text {
-        font-size: 20px;
-        letter-spacing: 3px;
+        font-weight: 10;
+        font-size: 2px;
+        letter-spacing: 1px;
+        width: 100vw;
     }
-    
+
     .svg-mask {
         width: 100vw;
+    }
+
+    .svg-mask rect {
+        width: 100vw;
+        height: 100vh;
     }
 }
 </style>
