@@ -32,7 +32,7 @@ const initThreeJS = () => {
     0.1,
     1000
   )
-  camera.position.z = 1.5 // Cámara más cerca para mejor encuadre
+  camera.position.z = 2 // Cámara más cerca para mejor encuadre
 
   // Renderer
   renderer = new THREE.WebGLRenderer({ 
@@ -52,7 +52,7 @@ const initThreeJS = () => {
   controls.minDistance = 1
   controls.maxDistance = 3
   controls.autoRotate = true // ✅ Auto-rotación activada
-  controls.autoRotateSpeed = 2 // Velocidad de rotación
+  controls.autoRotateSpeed = 0.5 // Velocidad de rotación
 
   // Luces
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
@@ -91,7 +91,7 @@ const loadReadyPlayerMeAvatar = () => {
       avatar = gltf.scene
       
       // 🎯 Ajustar posición y escala (OPTIMIZADO para mejor visualización)
-      avatar.position.set(0, -0.75, 0) // Centrado vertical optimizado
+      avatar.position.set(0, -1, 0) // Centrado vertical optimizado
       avatar.scale.set(1, 1, 1) // Escala real del modelo
       
       // Agregar iluminación especial al avatar
@@ -109,7 +109,7 @@ const loadReadyPlayerMeAvatar = () => {
       
       scene.add(avatar)
       console.log('✅ Avatar de Ready Player Me cargado correctamente')
-      console.log('📏 Escala: 1x | Posición Y: -0.75 | Cámara Z: 1.5 | FOV: 50°')
+      console.log('📏 Escala: 1x | Posición Y: -1 | Cámara Z: 1.5 | FOV: 50°')
     },
     (progress) => {
       // Progreso de carga

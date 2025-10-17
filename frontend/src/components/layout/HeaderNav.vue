@@ -11,6 +11,7 @@
         <a href="#sobre-mi" class="nav-link" :class="{ active: isActive('sobre-mi') }">Sobre Mí</a>
         <a href="#proyectos" class="nav-link" :class="{ active: isActive('proyectos') }">Proyectos</a>
         <a href="#habilidades" class="nav-link" :class="{ active: isActive('habilidades') }">Habilidades</a>
+        <a href="#certificaciones" class="nav-link" :class="{ active: isActive('certificaciones') }">Certificaciones</a>
         <a href="#servicios" class="nav-link" :class="{ active: isActive('servicios') }">Servicios</a>
         <a href="#contacto" class="nav-link" :class="{ active: isActive('contacto') }">Contacto</a>
         <button @click="toggleTheme" class="theme-toggle" aria-label="Cambiar tema">
