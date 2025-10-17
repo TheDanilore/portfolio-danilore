@@ -21,14 +21,14 @@ onMounted(() => {
 
 <template>
   <div id="app">
-    <!-- Splash Screen con animación de inicio -->
-    <SplashScreen v-if="showSplash" @animation-complete="handleSplashComplete" />
-    
-    <!-- Contenido principal del portfolio -->
-    <div v-show="!showSplash" class="main-content">
+    <!-- Contenido principal del portfolio (siempre renderizado) -->
+    <div class="main-content" :class="{ 'content-visible': !showSplash }">
       <RouterView />
-      <CatNavigator />
+      <CatNavigator v-if="!showSplash" />
     </div>
+
+    <!-- Splash Screen con animación de inicio (encima del contenido) -->
+    <SplashScreen v-if="showSplash" @animation-complete="handleSplashComplete" />
   </div>
 </template>
 
@@ -94,15 +94,13 @@ body {
 
 /* Contenido principal */
 .main-content {
-  opacity: 0;
-  animation: fadeIn 0.8s ease forwards;
-  animation-delay: 0.2s;
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
 }
 
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
+.main-content.content-visible {
+  pointer-events: auto;
 }
 
 /* Transición fade */

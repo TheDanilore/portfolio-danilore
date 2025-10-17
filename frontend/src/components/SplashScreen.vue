@@ -1,10 +1,23 @@
 <template>
     <Transition name="splash-fade">
         <div v-if="isVisible" class="splash-screen">
-            <!-- Texto DANILORE DEV -->
-            <div class="text-container">
-                <h1 class="splash-text">DANILORE DEV</h1>
-            </div>
+            <!-- SVG con máscara para recortar el texto -->
+            <svg class="svg-mask" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <mask id="textMask">
+                        <rect width="100%" height="100%" fill="white"/>
+                        <text 
+                            x="50%" 
+                            y="50%" 
+                            text-anchor="middle" 
+                            dominant-baseline="middle"
+                            class="mask-text"
+                        >DANILORE DEV</text>
+                    </mask>
+                </defs>
+                <!-- Rectángulo negro con máscara de texto que cubre todo -->
+                <rect width="100%" height="100%" fill="#000000" mask="url(#textMask)"/>
+            </svg>
         </div>
     </Transition>
 </template>
@@ -28,30 +41,30 @@ onMounted(() => {
         }
     })
 
-    // 1. Fade in del texto
-    timeline.from('.splash-text', {
-        duration: 1,
+    // 1. Fade in solo del TEXTO (no del SVG completo)
+    timeline.from('.mask-text', {
+        duration: 1.2,
         opacity: 0,
-        y: 50,
+        scale: 0.8,
         ease: 'power2.out'
     })
 
-    // 2. Pausa para leer el texto
-    timeline.to({}, { duration: 1.5 })
+    // 2. Pausa para ver el efecto
+    timeline.to({}, { duration: 2 })
 
-    // 3. Zoom y fade out simultáneos
-    timeline.to('.splash-text', {
-        duration: 1.2,
-        scale: 8,
-        opacity: 0,
+    // 3. Zoom del SVG completo
+    timeline.to('.svg-mask', {
+        duration: 1.5,
+        scale: 10,
         ease: 'power2.inOut'
     })
 
+    // 4. Fade out de todo
     timeline.to('.splash-screen', {
-        duration: 0.4,
+        duration: 0.5,
         opacity: 0,
         ease: 'power2.out'
-    }, '-=0.4')
+    }, '-=0.5')
 })
 </script>
 
@@ -63,33 +76,34 @@ onMounted(() => {
     width: 100vw;
     height: 100vh;
     z-index: 9999;
-    background: linear-gradient(135deg, #000000 0%, #2a2a2a 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    background: transparent;
 }
 
-.text-container {
+.svg-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 20px;
+    height: 100%;
+    transform-origin: center;
 }
 
-.splash-text {
+.svg-mask rect {
+    width: 100%;
+    height: 100%;
+}
+
+.mask-text {
     font-family: 'Montserrat', sans-serif;
     font-weight: 900;
-    font-size: clamp(2.5rem, 8vw, 7rem);
-    color: #ffffff;
-    text-align: center;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    text-shadow: 0 0 30px rgba(255, 255, 255, 0.5),
-                 0 0 60px rgba(255, 255, 255, 0.3);
+    font-size: 90px;
+    letter-spacing: 12px;
+    fill: black;
     transform-origin: center;
-    white-space: nowrap;
 }
 
 /* Transición de salida */
@@ -105,15 +119,20 @@ onMounted(() => {
 
 /* Responsive */
 @media (max-width: 768px) {
-    .splash-text {
-        font-size: clamp(2rem, 7vw, 5rem);
-        letter-spacing: 0.05em;
+    .mask-text {
+        font-size: 60px;
+        letter-spacing: 6px;
     }
 }
 
 @media (max-width: 480px) {
-    .splash-text {
-        font-size: clamp(1.5rem, 6vw, 4rem);
+    .mask-text {
+        font-size: 40px;
+        letter-spacing: 3px;
+    }
+    
+    .svg-mask {
+        width: 95%;
     }
 }
 </style>
