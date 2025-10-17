@@ -1,7 +1,7 @@
 <template>
   <div class="cat-navigator" :class="{ 'cat-visible': isVisible }">
     <div class="cat-container" :style="catStyle" @click="handleCatClick">
-      <div class="cat" :class="[catState, { 'cat-jumping': isJumping, 'cat-dancing': isDancing }]">
+      <div class="cat" :class="[catState, { 'cat-jumping': isJumping, 'cat-dancing': isDancing, 'cat-shaking': isShaking }]">
         <!-- Cabeza del gato -->
         <div class="cat-head">
           <!-- Orejas -->
@@ -38,22 +38,22 @@
           </div>
         </div>
         
-        <!-- Cuerpo (se muestra cuando está visible o bailando) -->
-        <div class="cat-body" v-if="catState === 'full-visible' || isDancing">
+        <!-- Cuerpo (se muestra cuando está visible completo) -->
+        <div class="cat-body" v-if="catState === 'full-visible' || isDancing || isJumping">
           <div class="cat-belly"></div>
         </div>
         
         <!-- Patas -->
-        <div class="cat-legs" v-if="catState === 'full-visible' || isDancing">
+        <div class="cat-legs" v-if="catState === 'full-visible' || isDancing || isJumping">
           <div class="cat-leg leg-left"></div>
           <div class="cat-leg leg-right"></div>
         </div>
         
         <!-- Cola -->
-        <div class="cat-tail" v-if="catState === 'full-visible' || isDancing"></div>
+        <div class="cat-tail" v-if="catState === 'full-visible' || isDancing || isJumping"></div>
         
         <!-- Pata asomando (solo cuando está escondido) -->
-        <div class="cat-paw" v-if="catState !== 'full-visible' && !isDancing"></div>
+        <div class="cat-paw" v-if="catState !== 'full-visible' && !isDancing && !isJumping"></div>
       </div>
       
       <!-- Mensaje del gato -->
@@ -74,6 +74,7 @@ const catStyle = ref({})
 const isJumping = ref(false)
 const isDancing = ref(false)
 const isHappy = ref(false)
+const isShaking = ref(false)
 const showMessage = ref(false)
 const currentMessage = ref('')
 
@@ -84,7 +85,29 @@ let peekInterval = null
 let clickCount = 0
 let isInteracting = ref(false) // Nueva bandera para saber si el usuario está interactuando
 
-// Sonidos del gato (usando Web Audio API y frecuencias)
+// 🎵 SONIDOS DEL GATO - PERSONALIZACIÓN FÁCIL
+// Puedes cambiar estos valores para modificar los sonidos:
+
+// Sonido MIAU - Configuración
+const MEOW_CONFIG = {
+  type: 'sine', // Tipo de onda: 'sine', 'square', 'sawtooth', 'triangle'
+  startFreq: 400, // Frecuencia inicial (Hz) - más alto = más agudo
+  peakFreq: 700,  // Frecuencia pico (Hz) - 600-800 suena más realista
+  endFreq: 250,   // Frecuencia final (Hz) - más bajo = más grave
+  duration: 0.4,  // Duración total (segundos)
+  volume: 0.4     // Volumen (0.0 a 1.0)
+}
+
+// Sonido RONRONEO - Configuración
+const PURR_CONFIG = {
+  type: 'sawtooth', // 'sawtooth' da efecto más vibrante
+  baseFreq: 60,     // Frecuencia base (Hz) - 60-90 suena natural
+  duration: 1.5,    // Duración total (segundos)
+  pulses: 15,       // Número de vibraciones - más = más realista
+  volume: 0.2       // Volumen (0.0 a 1.0)
+}
+
+// Función para reproducir MIAU
 const playMeowSound = () => {
   const audioContext = new (window.AudioContext || window.webkitAudioContext)()
   const oscillator = audioContext.createOscillator()
@@ -93,19 +116,23 @@ const playMeowSound = () => {
   oscillator.connect(gainNode)
   gainNode.connect(audioContext.destination)
   
-  // Configurar el sonido de miau (frecuencias que simulan un maullido)
-  oscillator.type = 'sine'
-  oscillator.frequency.setValueAtTime(400, audioContext.currentTime)
-  oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1)
-  oscillator.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.3)
+  // Aplicar configuración personalizada
+  oscillator.type = MEOW_CONFIG.type
+  oscillator.frequency.setValueAtTime(MEOW_CONFIG.startFreq, audioContext.currentTime)
+  oscillator.frequency.exponentialRampToValueAtTime(MEOW_CONFIG.peakFreq, audioContext.currentTime + MEOW_CONFIG.duration * 0.25)
+  oscillator.frequency.exponentialRampToValueAtTime(MEOW_CONFIG.endFreq, audioContext.currentTime + MEOW_CONFIG.duration)
   
-  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
-  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+  // Envelope de volumen (fade in/out más natural)
+  gainNode.gain.setValueAtTime(0, audioContext.currentTime)
+  gainNode.gain.linearRampToValueAtTime(MEOW_CONFIG.volume, audioContext.currentTime + 0.05)
+  gainNode.gain.linearRampToValueAtTime(MEOW_CONFIG.volume * 0.7, audioContext.currentTime + MEOW_CONFIG.duration * 0.5)
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + MEOW_CONFIG.duration)
   
   oscillator.start(audioContext.currentTime)
-  oscillator.stop(audioContext.currentTime + 0.3)
+  oscillator.stop(audioContext.currentTime + MEOW_CONFIG.duration)
 }
 
+// Función para reproducir RONRONEO
 const playPurrSound = () => {
   const audioContext = new (window.AudioContext || window.webkitAudioContext)()
   const oscillator = audioContext.createOscillator()
@@ -114,23 +141,27 @@ const playPurrSound = () => {
   oscillator.connect(gainNode)
   gainNode.connect(audioContext.destination)
   
-  // Configurar el sonido de ronroneo (vibración suave)
-  oscillator.type = 'sawtooth'
-  oscillator.frequency.setValueAtTime(80, audioContext.currentTime)
+  // Aplicar configuración personalizada
+  oscillator.type = PURR_CONFIG.type
+  oscillator.frequency.setValueAtTime(PURR_CONFIG.baseFreq, audioContext.currentTime)
   
-  // Modulación para efecto de ronroneo
-  gainNode.gain.setValueAtTime(0.15, audioContext.currentTime)
-  for (let i = 0; i < 10; i++) {
-    gainNode.gain.linearRampToValueAtTime(0.25, audioContext.currentTime + (i * 0.1))
-    gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + (i * 0.1) + 0.05)
+  // Modulación para efecto de ronroneo (vibraciones)
+  const pulseInterval = PURR_CONFIG.duration / PURR_CONFIG.pulses
+  gainNode.gain.setValueAtTime(PURR_CONFIG.volume * 0.3, audioContext.currentTime)
+  
+  for (let i = 0; i < PURR_CONFIG.pulses; i++) {
+    const time = audioContext.currentTime + (i * pulseInterval)
+    gainNode.gain.linearRampToValueAtTime(PURR_CONFIG.volume * 0.6, time)
+    gainNode.gain.linearRampToValueAtTime(PURR_CONFIG.volume * 0.3, time + pulseInterval * 0.5)
   }
-  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1)
+  
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + PURR_CONFIG.duration)
   
   oscillator.start(audioContext.currentTime)
-  oscillator.stop(audioContext.currentTime + 1)
+  oscillator.stop(audioContext.currentTime + PURR_CONFIG.duration)
 }
 
-// Mensajes aleatorios del gato
+// Mensajes aleatorios del gato (más variedad y personalidad)
 const catMessages = [
   '¡Miau! 😸',
   '¡Hola humano! 👋',
@@ -139,7 +170,14 @@ const catMessages = [
   '¡Bailemos! 🎵',
   '¡Ronroneo! 😻',
   '¡Salta conmigo! 🦘',
-  '¡Eres genial! ⭐'
+  '¡Eres genial! ⭐',
+  '¡Acaríciame! 🤗',
+  '¡Estoy feliz! 😊',
+  '¡Mira mi cola! 🎨',
+  '¡Juguemos! 🎮',
+  '¡Qué bonito día! ☀️',
+  '¡Te quiero! ❤️',
+  '¡Soy el mejor! 👑'
 ]
 
 // Función para mostrar mensaje
@@ -168,11 +206,24 @@ const makeCatDance = () => {
 const makeCatJump = () => {
   isJumping.value = true
   isHappy.value = true
+  catState.value = 'full-visible' // Mostrar completo al saltar
   
   setTimeout(() => {
     isJumping.value = false
     isHappy.value = false
   }, 600)
+}
+
+// Función para hacer que el gato se sacuda (nuevo)
+const makeCatShake = () => {
+  isShaking.value = true
+  isHappy.value = true
+  catState.value = 'full-visible'
+  
+  setTimeout(() => {
+    isShaking.value = false
+    isHappy.value = false
+  }, 800)
 }
 
 // Manejar clic en el gato (¡aquí está la magia! ✨)
@@ -188,15 +239,15 @@ const handleCatClick = () => {
   
   // Diferentes comportamientos según el número de clics
   if (clickCount === 1) {
-    // Primer clic: Mostrar completo + Miau
+    // Primer clic: Mostrar completo + Miau + Sonrisa
     playMeowSound()
     catState.value = 'full-visible'
-    showCatMessage()
     isHappy.value = true
+    showCatMessage()
     
     setTimeout(() => {
       isHappy.value = false
-    }, 1500)
+    }, 2000) // Más tiempo de sonrisa
   } else if (clickCount === 2) {
     // Segundo clic: Saltar + Miau
     playMeowSound()
@@ -207,9 +258,14 @@ const handleCatClick = () => {
     playPurrSound()
     makeCatDance()
     showCatMessage()
+  } else if (clickCount === 4) {
+    // Cuarto clic: Sacudida + Ronroneo
+    playPurrSound()
+    makeCatShake()
+    showCatMessage()
   } else {
-    // Más clics: Acción aleatoria
-    const randomAction = Math.floor(Math.random() * 3)
+    // Más clics: Acción aleatoria (más variedad)
+    const randomAction = Math.floor(Math.random() * 4)
     
     if (randomAction === 0) {
       playMeowSound()
@@ -217,12 +273,16 @@ const handleCatClick = () => {
     } else if (randomAction === 1) {
       playPurrSound()
       makeCatDance()
-    } else {
+    } else if (randomAction === 2) {
       playPurrSound()
+      makeCatShake()
+    } else {
+      playMeowSound()
+      catState.value = 'full-visible'
       isHappy.value = true
       setTimeout(() => {
         isHappy.value = false
-      }, 1000)
+      }, 1500)
     }
     
     showCatMessage()
@@ -371,6 +431,7 @@ onUnmounted(() => {
 
 .cat-container:hover {
   transform: scale(1.05);
+  filter: brightness(1.1);
 }
 
 .cat {
@@ -421,6 +482,20 @@ onUnmounted(() => {
   }
   50% {
     transform: translateY(-90%) rotate(5deg);
+  }
+}
+
+/* Animación de sacudida (nuevo) */
+.cat-shaking {
+  animation: cat-shake 0.1s ease-in-out infinite;
+}
+
+@keyframes cat-shake {
+  0%, 100% {
+    transform: translateY(-80%) translateX(-2px);
+  }
+  50% {
+    transform: translateY(-80%) translateX(2px);
   }
 }
 
