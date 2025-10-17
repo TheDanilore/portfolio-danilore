@@ -52,6 +52,7 @@
           <a href="#sobre-mi" @click="closeMobileMenu" class="nav-link">Sobre Mí</a>
           <a href="#proyectos" @click="closeMobileMenu" class="nav-link">Proyectos</a>
           <a href="#habilidades" @click="closeMobileMenu" class="nav-link">Habilidades</a>
+          <a href="#certificaciones" @click="closeMobileMenu" class="nav-link">Certificaciones</a>
           <a href="#servicios" @click="closeMobileMenu" class="nav-link">Servicios</a>
           <a href="#contacto" @click="closeMobileMenu" class="nav-link">Contacto</a>
         </div>
@@ -99,9 +100,8 @@ const handleScroll = () => {
     detectActiveSection()
   }
 }
-
 const detectActiveSection = () => {
-  const sections = ['inicio', 'sobre-mi', 'proyectos', 'habilidades', 'servicios', 'contacto']
+  const sections = ['inicio', 'sobre-mi', 'proyectos', 'habilidades', 'certificaciones', 'servicios', 'contacto']
   const offset = 100
   
   for (const section of sections) {

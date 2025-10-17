@@ -1,12 +1,6 @@
 <template>
   <div class="avatar-3d-container">
     <div ref="avatarCanvas" class="avatar-canvas"></div>
-    <div class="avatar-controls">
-      <p class="control-hint">
-        <i class="fas fa-hand-pointer"></i>
-        Arrastra para rotar
-      </p>
-    </div>
   </div>
 </template>
 
@@ -33,12 +27,12 @@ const initThreeJS = () => {
   
   // Cámara (FOV más pequeño = avatar más grande)
   camera = new THREE.PerspectiveCamera(
-    45, // Reducido de 75 a 45 para zoom más cercano
+    50, // FOV optimizado para mejor visualización
     avatarCanvas.value.clientWidth / avatarCanvas.value.clientHeight,
     0.1,
     1000
   )
-  camera.position.z = 2.5 // Más cerca: reducido de 5 a 2.5
+  camera.position.z = 1.5 // Cámara más cerca para mejor encuadre
 
   // Renderer
   renderer = new THREE.WebGLRenderer({ 
@@ -55,10 +49,10 @@ const initThreeJS = () => {
   controls.dampingFactor = 0.05
   controls.enableZoom = true
   controls.enablePan = false
-  controls.minDistance = 1.5 // Ajustado de 3 a 1.5 para permitir acercarse más
-  controls.maxDistance = 4 // Ajustado de 8 a 4 para mantener el avatar visible
-  controls.autoRotate = true
-  controls.autoRotateSpeed = 1.5 // Reducido de 2 a 1.5 para rotación más suave
+  controls.minDistance = 1
+  controls.maxDistance = 3
+  controls.autoRotate = true // ✅ Auto-rotación activada
+  controls.autoRotateSpeed = 2 // Velocidad de rotación
 
   // Luces
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
@@ -96,9 +90,9 @@ const loadReadyPlayerMeAvatar = () => {
       // Avatar cargado exitosamente
       avatar = gltf.scene
       
-      // 🎯 Ajustar posición y escala (AUMENTADO para verse más grande)
-      avatar.position.set(0, -1, 0) // Subido de -1.5 a -1 para centrarlo mejor
-      avatar.scale.set(2.5, 2.5, 2.5) // Aumentado de 2 a 2.5 (25% más grande)
+      // 🎯 Ajustar posición y escala (OPTIMIZADO para mejor visualización)
+      avatar.position.set(0, -0.75, 0) // Centrado vertical optimizado
+      avatar.scale.set(1, 1, 1) // Escala real del modelo
       
       // Agregar iluminación especial al avatar
       avatar.traverse((child) => {
@@ -115,7 +109,7 @@ const loadReadyPlayerMeAvatar = () => {
       
       scene.add(avatar)
       console.log('✅ Avatar de Ready Player Me cargado correctamente')
-      console.log('📏 Escala: 2.5x | Posición Y: -1 | Cámara Z: 2.5')
+      console.log('📏 Escala: 1x | Posición Y: -0.75 | Cámara Z: 1.5 | FOV: 50°')
     },
     (progress) => {
       // Progreso de carga
@@ -123,88 +117,10 @@ const loadReadyPlayerMeAvatar = () => {
       console.log(`Cargando avatar: ${percent.toFixed(0)}%`)
     },
     (error) => {
-      console.error('❌ Error cargando avatar:', error)
-      // Si falla, crear avatar de respaldo
-      createAvatar()
+      console.error('❌ Error cargando avatar de Ready Player Me:', error)
+      console.error('Verifica que la URL sea correcta y que tengas conexión a internet')
     }
   )
-}
-
-const createAvatar = () => {
-  avatar = new THREE.Group()
-
-  // Material principal con efecto holográfico
-  const material = new THREE.MeshPhongMaterial({
-    color: 0x667eea,
-    emissive: 0x667eea,
-    emissiveIntensity: 0.3,
-    shininess: 100,
-    transparent: true,
-    opacity: 0.9
-  })
-
-  // Cabeza
-  const headGeometry = new THREE.SphereGeometry(0.8, 32, 32)
-  const head = new THREE.Mesh(headGeometry, material)
-  head.position.y = 1.5
-  avatar.add(head)
-
-  // Ojos
-  const eyeMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
-  const eyeGeometry = new THREE.SphereGeometry(0.1, 16, 16)
-  
-  const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial)
-  leftEye.position.set(-0.25, 1.6, 0.6)
-  avatar.add(leftEye)
-  
-  const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial)
-  rightEye.position.set(0.25, 1.6, 0.6)
-  avatar.add(rightEye)
-
-  // Pupilas
-  const pupilMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 })
-  const pupilGeometry = new THREE.SphereGeometry(0.05, 16, 16)
-  
-  const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial)
-  leftPupil.position.set(-0.25, 1.6, 0.65)
-  avatar.add(leftPupil)
-  
-  const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial)
-  rightPupil.position.set(0.25, 1.6, 0.65)
-  avatar.add(rightPupil)
-
-  // Cuerpo
-  const bodyGeometry = new THREE.CylinderGeometry(0.6, 0.7, 1.5, 32)
-  const body = new THREE.Mesh(bodyGeometry, material)
-  body.position.y = 0
-  avatar.add(body)
-
-  // Brazos
-  const armGeometry = new THREE.CylinderGeometry(0.15, 0.15, 1.2, 16)
-  
-  const leftArm = new THREE.Mesh(armGeometry, material)
-  leftArm.position.set(-0.85, 0.2, 0)
-  leftArm.rotation.z = Math.PI / 8
-  avatar.add(leftArm)
-  
-  const rightArm = new THREE.Mesh(armGeometry, material)
-  rightArm.position.set(0.85, 0.2, 0)
-  rightArm.rotation.z = -Math.PI / 8
-  avatar.add(rightArm)
-
-  // Anillo de energía alrededor
-  const ringGeometry = new THREE.TorusGeometry(1.5, 0.05, 16, 100)
-  const ringMaterial = new THREE.MeshBasicMaterial({
-    color: 0xf093fb,
-    transparent: true,
-    opacity: 0.6
-  })
-  const ring = new THREE.Mesh(ringGeometry, ringMaterial)
-  ring.rotation.x = Math.PI / 2
-  avatar.add(ring)
-
-  // Agregar a la escena
-  scene.add(avatar)
 }
 
 const createParticles = () => {
@@ -233,16 +149,7 @@ const createParticles = () => {
 const animate = () => {
   animationId = requestAnimationFrame(animate)
 
-  // Animar avatar
-  if (avatar) {
-    avatar.rotation.y += 0.001
-    
-    // Animación de respiración
-    const scale = 1 + Math.sin(Date.now() * 0.002) * 0.02
-    avatar.scale.set(scale, scale, scale)
-  }
-
-  // Animar partículas
+  // Animar partículas de fondo
   if (particles) {
     particles.rotation.y += 0.0005
   }
@@ -250,7 +157,7 @@ const animate = () => {
   // Actualizar controles
   controls.update()
 
-  // Renderizar
+  // Renderizar escena
   renderer.render(scene, camera)
 }
 
@@ -302,50 +209,10 @@ onUnmounted(() => {
   cursor: grabbing;
 }
 
-.avatar-controls {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  pointer-events: none;
-}
-
-.control-hint {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  backdrop-filter: blur(10px);
-  animation: hint-fade 3s ease-in-out infinite;
-}
-
-@keyframes hint-fade {
-  0%, 100% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.control-hint i {
-  font-size: 1.2rem;
-  color: #667eea;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .avatar-3d-container {
     min-height: 300px;
-  }
-  
-  .control-hint {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
   }
 }
 </style>

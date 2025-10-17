@@ -328,4 +328,91 @@ defineProps({
     <circle cx="12" cy="8" r="7"></circle>
     <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
   </svg>
+
+  <svg 
+    v-else-if="name === 'check-circle'" 
+    :width="size" 
+    :height="size" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    :stroke="color" 
+    stroke-width="2"
+  >
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+  </svg>
+
+  <svg 
+    v-else-if="name === 'coffee'" 
+    :width="size" 
+    :height="size" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    :stroke="color" 
+    stroke-width="2"
+  >
+    <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+    <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+    <line x1="6" y1="1" x2="6" y2="4"></line>
+    <line x1="10" y1="1" x2="10" y2="4"></line>
+    <line x1="14" y1="1" x2="14" y2="4"></line>
+  </svg>
+
+  <svg 
+    v-else-if="name === 'book-open'" 
+    :width="size" 
+    :height="size" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    :stroke="color" 
+    stroke-width="2"
+  >
+    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+  </svg>
+
+  <svg 
+    v-else-if="name === 'globe'" 
+    :width="size" 
+    :height="size" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    :stroke="color" 
+    stroke-width="2"
+  >
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="2" y1="12" x2="22" y2="12"></line>
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+  </svg>
+
+  <svg 
+    v-else-if="name === 'file-text'" 
+    :width="size" 
+    :height="size" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    :stroke="color" 
+    stroke-width="2"
+  >
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+    <polyline points="14 2 14 8 20 8"></polyline>
+    <line x1="16" y1="13" x2="8" y2="13"></line>
+    <line x1="16" y1="17" x2="8" y2="17"></line>
+    <polyline points="10 9 9 9 8 9"></polyline>
+  </svg>
+
+  <svg 
+    v-else-if="name === 'wifi'" 
+    :width="size" 
+    :height="size" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    :stroke="color" 
+    stroke-width="2"
+  >
+    <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+    <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+    <line x1="12" y1="20" x2="12.01" y2="20"></line>
+  </svg>
 </template>

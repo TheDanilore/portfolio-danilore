@@ -6,16 +6,13 @@
         <div class="section-line"></div>
       </div>
       <div class="about-content">
-        <!-- Avatar 3D Interactivo -->
-        <div class="about-avatar">
-          <Avatar3D />
-          <div class="avatar-badge">
-            <span class="badge-icon">🎮</span>
-            <span class="badge-text">Avatar 3D Interactivo</span>
-            <span class="badge-hint">Arrastra para rotar</span>
+        <div class="about-image">
+          <img src="/assets/images/about_me/my_photo_desenfocado.jpg" alt="Sobre Mí" />
+          <div class="experience-badge">
+            <span class="number">4+</span>
+            <span class="text">Años de Experiencia</span>
           </div>
         </div>
-        
         <div class="about-text">
           <h3>Software Developer</h3>
           <p>
@@ -24,11 +21,11 @@
             Back-End, e integraciones con CRM como Salesforce y Odoo.
           </p>
           <p>
-            Actualmente, curso el IX ciclo de Ingeniería de Sistemas e Informática. Mi objetivo profesional es crecer
+            Actualmente, curso el X ciclo de Ingeniería de Sistemas e Informática. Mi objetivo profesional es crecer
             en el campo del desarrollo de software, contribuyendo en proyectos innovadores y desafiantes que impulsen
             la innovación tecnológica.
           </p>
-          <a href="/assets/docs/CV-ARTEAGA-LORENZO.pdf" class="btn btn-primary" download>
+          <a href="/assets/docs/CV - ARTEAGA GORDILLO LORENZO.pdf" class="btn btn-primary" download>
             <i class="fas fa-download"></i> Descargar CV
           </a>
         </div>
