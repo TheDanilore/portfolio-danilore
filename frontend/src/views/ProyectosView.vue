@@ -98,24 +98,38 @@ const filters = [
   { value: 'all', label: 'Todos' },
   { value: 'backend', label: 'CRM/Backend' },
   { value: 'fullstack', label: 'Full-Stack' },
-  { value: 'mobile', label: 'Mobile' }
+  { value: 'mobile', label: 'Mobile' },
+  { value: 'game', label: 'Juegos' },
+  { value: 'etl', label: 'ETL' }
 ]
 
 const projects = [
   {
     id: 1,
-    title: 'Middleware Shopify ↔ HiOffice',
-    category: 'CRM/Backend',
-    type: 'backend',
-    description: 'Sistema de integración automática entre plataforma e-commerce Shopify y sistema ERP HiOffice usando Laravel 12, Redis para colas, MySQL 8.0 y Docker. Sincronización bidireccional de productos, inventario y órdenes en tiempo real.',
-    image: '/assets/images/projects/middleware-shopify.png',
-    technologies: ['Laravel 12', 'Redis', 'MySQL 8.0', 'Docker', 'Shopify API'],
-    github: '#',
+    title: 'Danilore Rifas',
+    category: 'Full-Stack',
+    type: 'fullstack',
+    description: 'Plataforma de rifas online con sistema innovador de premios progresivos. Los usuarios desbloquean diferentes premios a medida que se venden tickets. Dashboard administrativo completo, integración con Yape/Plin, notificaciones en tiempo real y panel de analytics.',
+    image: '/assets/images/projects/danilore-rifas.png',
+    technologies: ['Laravel 12', 'Vue.js 3', 'Docker Compose', 'MySQL', 'Sanctum'],
+    github: 'https://github.com/TheDanilore/rifas-backend',
     demo: null,
     video: null
   },
   {
     id: 2,
+    title: 'Middleware Shopify ↔ HiOffice',
+    category: 'Full-Stack',
+    type: 'fullstack',
+    description: 'Sistema de integración automática entre plataforma e-commerce Shopify y sistema ERP HiOffice usando Laravel 12, Redis para colas, MySQL 8.0 y Docker. Sincronización bidireccional de productos, inventario y órdenes en tiempo real.',
+    image: '/assets/images/projects/middleware-shopify.png',
+    technologies: ['Laravel 12', 'Laravel Blade', 'Redis', 'MySQL 8.0', 'Docker', 'Shopify API'],
+    github: '#',
+    demo: null,
+    video: null
+  },
+  {
+    id: 3,
     title: 'AsesorApp',
     category: 'Mobile',
     type: 'mobile',
@@ -127,7 +141,7 @@ const projects = [
     video: null
   },
   {
-    id: 3,
+    id: 4,
     title: 'Tienda Virtual Personalizada',
     category: 'Full-Stack',
     type: 'fullstack',
@@ -139,10 +153,10 @@ const projects = [
     video: null
   },
   {
-    id: 4,
+    id: 5,
     title: 'Sistema Consultorio Odontológico',
-    category: 'CRM/Backend',
-    type: 'backend',
+    category: 'Full-Stack',
+    type: 'fullstack',
     description: 'Sistema de gestión integral para consultorios dentales con Spring Boot backend, interfaz Java Swing para escritorio, control de citas, historiales médicos, facturación y reportes.',
     image: '/assets/images/projects/consultorio_odontologico.png',
     technologies: ['Spring Boot', 'Java Swing', 'PostgreSQL', 'Docker'],
@@ -151,19 +165,19 @@ const projects = [
     video: 'https://www.youtube.com/watch?v=DfnC0RiEaDs&ab_channel=TheDanilore'
   },
   {
-    id: 5,
+    id: 6,
     title: 'Sistema Gestión de Inventario',
     category: 'CRM/Backend',
     type: 'backend',
     description: 'Plataforma web para control de inventarios con Laravel y Blade. Gestión de productos, proveedores, entradas/salidas, reportes en PDF/Excel y sistema de alertas de stock mínimo.',
     image: '/assets/images/projects/inventario.png',
     technologies: ['Laravel', 'Blade', 'Sanctum', 'MySQL', 'Chart.js'],
-    github: '#',
+    github: 'https://github.com/TheDanilore/SolicitudAlmacen',
     demo: null,
-    video: null
+    video: 'https://www.youtube.com/watch?v=qY0EfxUzy70&t=242s'
   },
   {
-    id: 6,
+    id: 7,
     title: 'ETIBOT - Chatbot Inteligente',
     category: 'Full-Stack',
     type: 'fullstack',
@@ -173,6 +187,42 @@ const projects = [
     github: 'https://github.com/TheDanilore/EtiBot',
     demo: null,
     video: 'https://www.youtube.com/watch?v=Sq_N1_yPn9I&t=1s&ab_channel=TheDanilore'
+  },
+  {
+    id: 8,
+    title: 'Juego Amigo Secreto',
+    category: 'Juegos',
+    type: 'game',
+    description: 'Se trata de una aplicación en JavaScript que permite agregar nombres a una lista y seleccionar aleatoriamente un amigo secreto.',
+    image: '/assets/images/projects/juego_amigo_secreto.png',
+    technologies: ['HTML5', 'CSS3', 'JavaScript'],
+    github: 'https://github.com/TheDanilore/challenge-amigo-secreto',
+    demo: 'https://thedanilore.github.io/challenge-amigo-secreto/',
+    video: null
+  },
+  {
+    id: 9,
+    title: 'Juego Número Secreto',
+    category: 'Juegos',
+    type: 'game',
+    description: 'Se trata de una aplicación en JavaScript que permite adivinar un número del 1 al 10.',
+    image: '/assets/images/projects/juego_numero_secreto.png',
+    technologies: ['HTML5', 'CSS3', 'JavaScript'],
+    github: 'https://github.com/TheDanilore/juego-secreto',
+    demo: 'https://thedanilore.github.io/juego-secreto/',
+    video: null
+  },
+  {
+    id: 10,
+    title: 'Datamind ETL',
+    category: 'ETL',
+    type: 'etl',
+    description: 'Demostración de un flujo ETL completo: extracción, transformación y carga de datos.',
+    image: '/assets/images/projects/ETL_visualstudio.png',
+    technologies: ['ETL', 'Visual Studio', 'MS SQL'],
+    github: null,
+    demo: null,
+    video: 'https://www.youtube.com/watch?v=3p-SxZz3TZg&ab_channel=TheDanilore'
   }
 ]
 
@@ -192,7 +242,6 @@ const filteredProjects = computed(() => {
 
 /* Hero Section */
 .proyectos-hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   padding: 8rem 2rem 4rem;
   text-align: center;

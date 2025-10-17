@@ -91,22 +91,34 @@ const filters = [
   { label: 'Todos', value: 'all' },
   { label: 'CRM/Backend', value: 'backend' },
   { label: 'Full-Stack', value: 'fullstack' },
-  { label: 'Mobile', value: 'mobile' }
+  { label: 'Mobile', value: 'mobile' },
+  { label: 'Juegos', value: 'game' },
+  { label: 'ETL', value: 'etl' }
 ]
 
 const projects = [
   {
     id: 1,
-    title: 'Middleware Shopify ↔ HiOffice',
-    description: 'Sistema de integración automática entre plataforma e-commerce Shopify y sistema ERP HiOffice usando Laravel 12, Redis para colas, MySQL 8.0 y Docker. Sincronización bidireccional de productos, inventario y órdenes en tiempo real.',
-    category: 'backend',
-    categoryLabel: 'CRM/Backend',
-    image: '/assets/images/projects/middleware-shopify.png',
-    github: '#',
-    tags: ['Laravel 12', 'Redis', 'MySQL 8.0', 'Docker', 'Shopify API']
+    title: 'Danilore Rifas',
+    description: 'Plataforma de rifas online con sistema innovador de premios progresivos. Los usuarios desbloquean diferentes premios a medida que se venden tickets. Dashboard administrativo completo, integración con Yape/Plin, notificaciones en tiempo real y panel de analytics.',
+    category: 'fullstack',
+    categoryLabel: 'Full-Stack',
+    image: '/assets/images/projects/danilore-rifas.png',
+    github: 'https://github.com/TheDanilore/rifas-backend',
+    tags: ['Laravel 12', 'Vue.js 3', 'Docker Compose', 'MySQL', 'Sanctum']
   },
   {
     id: 2,
+    title: 'Middleware Shopify ↔ HiOffice',
+    description: 'Sistema de integración automática entre plataforma e-commerce Shopify y sistema ERP HiOffice usando Laravel 12, Redis para colas, MySQL 8.0 y Docker. Sincronización bidireccional de productos, inventario y órdenes en tiempo real.',
+    category: 'fullstack',
+    categoryLabel: 'Full-Stack',
+    image: '/assets/images/projects/middleware-shopify.png',
+    github: '#',
+    tags: ['Laravel 12', 'Laravel Blade', 'Redis', 'MySQL 8.0', 'Docker', 'Shopify API']
+  },
+  {
+    id: 3,
     title: 'AsesorApp',
     description: 'Aplicación móvil multiplataforma desarrollada con Flutter y Firebase para asesoramiento académico. Gestión de estudiantes, citas, seguimiento personalizado y notificaciones push en tiempo real.',
     category: 'mobile',
@@ -116,7 +128,7 @@ const projects = [
     tags: ['Flutter', 'Firebase', 'Dart', 'Push Notifications']
   },
   {
-    id: 3,
+    id: 4,
     title: 'Tienda Virtual Personalizada',
     description: 'E-commerce full-stack con carrito de compras, pasarela de pagos, gestión de inventario y panel de administración. Arquitectura SPA con autenticación JWT y API RESTful.',
     category: 'fullstack',
@@ -126,28 +138,29 @@ const projects = [
     tags: ['Laravel', 'Vue.js', 'Sanctum', 'MySQL', 'Docker']
   },
   {
-    id: 4,
+    id: 5,
     title: 'Sistema Consultorio Odontológico',
     description: 'Sistema de gestión integral para consultorios dentales con Spring Boot backend, interfaz Java Swing para escritorio, control de citas, historiales médicos, facturación y reportes.',
-    category: 'backend',
-    categoryLabel: 'CRM/Backend',
+    category: 'fullstack',
+    categoryLabel: 'Full-Stack',
     image: '/assets/images/projects/consultorio_odontologico.png',
     video: 'https://www.youtube.com/watch?v=DfnC0RiEaDs&ab_channel=TheDanilore',
     github: 'https://github.com/TheDanilore/ConsultorioOdontologicoBackend',
     tags: ['Spring Boot', 'Java Swing', 'PostgreSQL', 'Docker']
   },
   {
-    id: 5,
+    id: 6,
     title: 'Sistema Gestión de Inventario',
     description: 'Plataforma web para control de inventarios con Laravel y Blade. Gestión de productos, proveedores, entradas/salidas, reportes en PDF/Excel y sistema de alertas de stock mínimo.',
     category: 'backend',
     categoryLabel: 'CRM/Backend',
     image: '/assets/images/projects/inventario.png',
-    github: '#',
+    video: 'https://www.youtube.com/watch?v=qY0EfxUzy70&t=242s',
+    github: 'https://github.com/TheDanilore/SolicitudAlmacen',
     tags: ['Laravel', 'Blade', 'Sanctum', 'MySQL', 'Chart.js']
   },
   {
-    id: 6,
+    id: 7,
     title: 'ETIBOT - Chatbot Inteligente',
     description: 'Chatbot asistente virtual integrado con IBM Watson Assistant y Google Gemini AI para atención al cliente 24/7. Frontend React, backend Laravel con procesamiento de lenguaje natural.',
     category: 'fullstack',
@@ -156,6 +169,28 @@ const projects = [
     video: 'https://www.youtube.com/watch?v=Sq_N1_yPn9I&t=1s&ab_channel=TheDanilore',
     github: 'https://github.com/TheDanilore/EtiBot',
     tags: ['Laravel', 'React', 'Watson Assistant', 'Gemini AI', 'WebSockets']
+  },
+  {
+    id: 8,
+    title: 'Juego Amigo Secreto',
+    description: 'Se trata de una aplicación en JavaScript que permite agregar nombres a una lista y seleccionar aleatoriamente un amigo secreto.',
+    category: 'game',
+    categoryLabel: 'Juegos',
+    image: '/assets/images/projects/juego_amigo_secreto.png',
+    demo: 'https://thedanilore.github.io/challenge-amigo-secreto/',
+    github: 'https://github.com/TheDanilore/challenge-amigo-secreto',
+    tags: ['HTML5', 'CSS3', 'JavaScript']
+  },
+  {
+    id: 9,
+    title: 'Juego Número Secreto',
+    description: 'Se trata de una aplicación en JavaScript que permite adivinar un número del 1 al 10.',
+    category: 'game',
+    categoryLabel: 'Juegos',
+    image: '/assets/images/projects/juego_numero_secreto.png',
+    demo: 'https://thedanilore.github.io/juego-secreto/',
+    github: 'https://github.com/TheDanilore/juego-secreto',
+    tags: ['HTML5', 'CSS3', 'JavaScript']
   }
 ]
 

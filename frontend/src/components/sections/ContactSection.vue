@@ -74,25 +74,64 @@
           >
             <div class="form-group">
               <label for="name">Nombre</label>
-              <input v-model="formData.name" type="text" id="name" name="name" required />
+              <input 
+                v-model="formData.name" 
+                type="text" 
+                id="name" 
+                name="name" 
+                required 
+                :class="{ 'error-input': errors.name }"
+              />
+              <div v-if="errors.name" class="error-message">{{ errors.name }}</div>
             </div>
 
             <div class="form-group">
               <label for="email">Email</label>
-              <input v-model="formData.email" type="email" id="email" name="email" required />
+              <input 
+                v-model="formData.email" 
+                type="email" 
+                id="email" 
+                name="email" 
+                required 
+                :class="{ 'error-input': errors.email }"
+              />
+              <div v-if="errors.email" class="error-message">{{ errors.email }}</div>
             </div>
 
             <div class="form-group">
               <label for="subject">Asunto</label>
-              <input v-model="formData.subject" type="text" id="subject" name="subject" required />
+              <input 
+                v-model="formData.subject" 
+                type="text" 
+                id="subject" 
+                name="subject" 
+                required 
+                :class="{ 'error-input': errors.subject }"
+              />
+              <div v-if="errors.subject" class="error-message">{{ errors.subject }}</div>
             </div>
 
             <div class="form-group">
               <label for="message">Mensaje</label>
-              <textarea v-model="formData.message" id="message" name="message" rows="5" required></textarea>
+              <textarea 
+                v-model="formData.message" 
+                id="message" 
+                name="message" 
+                rows="5" 
+                required
+                :class="{ 'error-input': errors.message }"
+              ></textarea>
+              <div v-if="errors.message" class="error-message">{{ errors.message }}</div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-submit" :disabled="isSubmitting">
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-submit g-recaptcha"
+              data-sitekey="6Ld3Vu0qAAAAAL6GFTQnL6velqTQfQZFPKP_hkcj"
+              data-callback="onSubmit"
+              data-action="submit"
+              :disabled="isSubmitting"
+            >
               <span v-if="!isSubmitting" class="btn-text">Enviar Mensaje</span>
               <span v-else class="btn-text">Enviando...</span>
               <span class="btn-icon">
@@ -106,13 +145,20 @@
       </div>
     </div>
   </section>
-
 </template>
+
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import IconComponent from '../icons/IconComponents.vue'
 
 const formData = ref({
+  name: '',
+  email: '',
+  subject: '',
+  message: ''
+})
+
+const errors = ref({
   name: '',
   email: '',
   subject: '',
@@ -123,35 +169,104 @@ const isSubmitting = ref(false)
 const submitMessage = ref('')
 const submitStatus = ref('')
 
+// Validación de email
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+// Validar formulario
+const validateForm = () => {
+  let isValid = true
+  errors.value = { name: '', email: '', subject: '', message: '' }
+
+  if (!formData.value.name.trim()) {
+    errors.value.name = 'Este campo es requerido'
+    isValid = false
+  }
+
+  if (!formData.value.email.trim()) {
+    errors.value.email = 'Este campo es requerido'
+    isValid = false
+  } else if (!isValidEmail(formData.value.email)) {
+    errors.value.email = 'El formato del correo electrónico no es válido'
+    isValid = false
+  }
+
+  if (!formData.value.subject.trim()) {
+    errors.value.subject = 'Este campo es requerido'
+    isValid = false
+  }
+
+  if (!formData.value.message.trim()) {
+    errors.value.message = 'Este campo es requerido'
+    isValid = false
+  }
+
+  return isValid
+}
+
+// Manejar envío del formulario
 const handleSubmit = async (e) => {
   e.preventDefault()
+  
+  // Validar antes de enviar
+  if (!validateForm()) {
+    return
+  }
+
   isSubmitting.value = true
   submitMessage.value = ''
 
   try {
-    const response = await fetch('https://formspree.io/f/xanewpke', {
-      method: 'POST',
-      body: new FormData(e.target),
+    const formElement = e.target
+    const formDataToSend = new FormData(formElement)
+
+    const response = await fetch(formElement.action, {
+      method: formElement.method,
+      body: formDataToSend,
       headers: {
         Accept: 'application/json'
       }
     })
 
     if (response.ok) {
-      submitMessage.value = '¡Mensaje enviado con éxito! Te responderé pronto.'
+      submitMessage.value = '✅ Se envió correctamente. ¡Gracias por contactarme!'
       submitStatus.value = 'success'
       formData.value = { name: '', email: '', subject: '', message: '' }
+      
+      // Ocultar mensaje después de 5 segundos
+      setTimeout(() => {
+        submitMessage.value = ''
+      }, 5000)
     } else {
-      submitMessage.value = 'Hubo un error al enviar el mensaje. Por favor, intenta nuevamente.'
+      const data = await response.json()
+      if (data.errors) {
+        submitMessage.value = '❌ ' + data.errors.map(error => error.message).join(', ')
+      } else {
+        submitMessage.value = '❌ Ocurrió un problema al enviar el formulario'
+      }
       submitStatus.value = 'error'
     }
-  } catch {
-    submitMessage.value = 'Error de conexión. Por favor, verifica tu conexión a internet.'
+  } catch (err) {
+    console.error('Error submitting form:', err)
+    submitMessage.value = '❌ Ocurrió un problema al enviar el formulario. Verifica tu conexión.'
     submitStatus.value = 'error'
   } finally {
     isSubmitting.value = false
   }
 }
+
+// Configurar callback de reCAPTCHA global
+onMounted(() => {
+  window.onSubmit = function() {
+    const contactForm = document.getElementById('contact-form')
+    if (contactForm) {
+      const submitEvent = new Event('submit', { bubbles: true, cancelable: true })
+      contactForm.dispatchEvent(submitEvent)
+    }
+  }
+})
 </script>
 
 <style scoped>
@@ -324,6 +439,17 @@ const handleSubmit = async (e) => {
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+  display: block;
+}
+
+.error-input {
+  border-color: #ef4444 !important;
 }
 
 .submit-message {
