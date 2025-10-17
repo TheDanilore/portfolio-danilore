@@ -102,24 +102,24 @@
   right: 20px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 15px;
   text-align: center;
   box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-  animation: float 3s ease-in-out infinite;
+  animation: float-40d79059 3s ease-in-out infinite;
 }
 
 .experience-badge .number {
   display: block;
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 500;
   font-family: var(--font-display);
 }
 
 .experience-badge .text {
   display: block;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 200;
 }
 
 .about-text {
@@ -168,6 +168,7 @@
     opacity: 0;
     transform: translateX(-50px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -179,6 +180,7 @@
     opacity: 0;
     transform: translateX(50px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -186,9 +188,12 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -200,7 +205,7 @@
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  
+
   .about-image {
     max-width: 400px;
     margin: 0 auto;

@@ -1,7 +1,7 @@
 <template>
   <div class="cat-navigator" :class="{ 'cat-visible': isVisible }">
-    <div class="cat-container" :style="catStyle">
-      <div class="cat" :class="catState">
+    <div class="cat-container" :style="catStyle" @click="handleCatClick">
+      <div class="cat" :class="[catState, { 'cat-jumping': isJumping, 'cat-dancing': isDancing }]">
         <!-- Cabeza del gato -->
         <div class="cat-head">
           <!-- Orejas -->
@@ -11,15 +11,18 @@
           <!-- Cara -->
           <div class="cat-face">
             <!-- Ojos -->
-            <div class="eye eye-left">
+            <div class="eye eye-left" :class="{ 'eye-happy': isHappy }">
               <div class="pupil"></div>
             </div>
-            <div class="eye eye-right">
+            <div class="eye eye-right" :class="{ 'eye-happy': isHappy }">
               <div class="pupil"></div>
             </div>
             
             <!-- Nariz -->
             <div class="nose"></div>
+            
+            <!-- Boca (sonrisa cuando está feliz) -->
+            <div class="mouth" :class="{ 'mouth-happy': isHappy }"></div>
             
             <!-- Bigotes -->
             <div class="whiskers whiskers-left">
@@ -35,8 +38,27 @@
           </div>
         </div>
         
-        <!-- Pata (solo se ve cuando asoma) -->
-        <div class="cat-paw"></div>
+        <!-- Cuerpo (se muestra cuando está visible o bailando) -->
+        <div class="cat-body" v-if="catState === 'full-visible' || isDancing">
+          <div class="cat-belly"></div>
+        </div>
+        
+        <!-- Patas -->
+        <div class="cat-legs" v-if="catState === 'full-visible' || isDancing">
+          <div class="cat-leg leg-left"></div>
+          <div class="cat-leg leg-right"></div>
+        </div>
+        
+        <!-- Cola -->
+        <div class="cat-tail" v-if="catState === 'full-visible' || isDancing"></div>
+        
+        <!-- Pata asomando (solo cuando está escondido) -->
+        <div class="cat-paw" v-if="catState !== 'full-visible' && !isDancing"></div>
+      </div>
+      
+      <!-- Mensaje del gato -->
+      <div class="cat-message" v-if="showMessage">
+        {{ currentMessage }}
       </div>
     </div>
   </div>
@@ -47,40 +69,223 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useWindowScroll } from '@vueuse/core'
 
 const isVisible = ref(false)
-const catState = ref('hidden') // hidden, peeking, visible
+const catState = ref('hidden') // hidden, peeking, visible, full-visible
 const catStyle = ref({})
+const isJumping = ref(false)
+const isDancing = ref(false)
+const isHappy = ref(false)
+const showMessage = ref(false)
+const currentMessage = ref('')
 
 const { y: scrollY } = useWindowScroll()
 
 let hideTimeout = null
 let peekInterval = null
+let clickCount = 0
+let isInteracting = ref(false) // Nueva bandera para saber si el usuario está interactuando
+
+// Sonidos del gato (usando Web Audio API y frecuencias)
+const playMeowSound = () => {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+  const oscillator = audioContext.createOscillator()
+  const gainNode = audioContext.createGain()
+  
+  oscillator.connect(gainNode)
+  gainNode.connect(audioContext.destination)
+  
+  // Configurar el sonido de miau (frecuencias que simulan un maullido)
+  oscillator.type = 'sine'
+  oscillator.frequency.setValueAtTime(400, audioContext.currentTime)
+  oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.1)
+  oscillator.frequency.exponentialRampToValueAtTime(300, audioContext.currentTime + 0.3)
+  
+  gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
+  
+  oscillator.start(audioContext.currentTime)
+  oscillator.stop(audioContext.currentTime + 0.3)
+}
+
+const playPurrSound = () => {
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+  const oscillator = audioContext.createOscillator()
+  const gainNode = audioContext.createGain()
+  
+  oscillator.connect(gainNode)
+  gainNode.connect(audioContext.destination)
+  
+  // Configurar el sonido de ronroneo (vibración suave)
+  oscillator.type = 'sawtooth'
+  oscillator.frequency.setValueAtTime(80, audioContext.currentTime)
+  
+  // Modulación para efecto de ronroneo
+  gainNode.gain.setValueAtTime(0.15, audioContext.currentTime)
+  for (let i = 0; i < 10; i++) {
+    gainNode.gain.linearRampToValueAtTime(0.25, audioContext.currentTime + (i * 0.1))
+    gainNode.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + (i * 0.1) + 0.05)
+  }
+  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1)
+  
+  oscillator.start(audioContext.currentTime)
+  oscillator.stop(audioContext.currentTime + 1)
+}
+
+// Mensajes aleatorios del gato
+const catMessages = [
+  '¡Miau! 😸',
+  '¡Hola humano! 👋',
+  '¿Me das comida? 🐟',
+  '¡Soy adorable! 💖',
+  '¡Bailemos! 🎵',
+  '¡Ronroneo! 😻',
+  '¡Salta conmigo! 🦘',
+  '¡Eres genial! ⭐'
+]
+
+// Función para mostrar mensaje
+const showCatMessage = () => {
+  currentMessage.value = catMessages[Math.floor(Math.random() * catMessages.length)]
+  showMessage.value = true
+  
+  setTimeout(() => {
+    showMessage.value = false
+  }, 2000)
+}
+
+// Función para hacer que el gato baile
+const makeCatDance = () => {
+  isDancing.value = true
+  isHappy.value = true
+  catState.value = 'full-visible'
+  
+  setTimeout(() => {
+    isDancing.value = false
+    isHappy.value = false
+  }, 3000)
+}
+
+// Función para hacer que el gato salte
+const makeCatJump = () => {
+  isJumping.value = true
+  isHappy.value = true
+  
+  setTimeout(() => {
+    isJumping.value = false
+    isHappy.value = false
+  }, 600)
+}
+
+// Manejar clic en el gato (¡aquí está la magia! ✨)
+const handleCatClick = () => {
+  clickCount++
+  isInteracting.value = true
+  
+  // Cancelar cualquier timeout de ocultación
+  if (hideTimeout) {
+    clearTimeout(hideTimeout)
+    hideTimeout = null
+  }
+  
+  // Diferentes comportamientos según el número de clics
+  if (clickCount === 1) {
+    // Primer clic: Mostrar completo + Miau
+    playMeowSound()
+    catState.value = 'full-visible'
+    showCatMessage()
+    isHappy.value = true
+    
+    setTimeout(() => {
+      isHappy.value = false
+    }, 1500)
+  } else if (clickCount === 2) {
+    // Segundo clic: Saltar + Miau
+    playMeowSound()
+    makeCatJump()
+    showCatMessage()
+  } else if (clickCount === 3) {
+    // Tercer clic: Bailar + Ronroneo
+    playPurrSound()
+    makeCatDance()
+    showCatMessage()
+  } else {
+    // Más clics: Acción aleatoria
+    const randomAction = Math.floor(Math.random() * 3)
+    
+    if (randomAction === 0) {
+      playMeowSound()
+      makeCatJump()
+    } else if (randomAction === 1) {
+      playPurrSound()
+      makeCatDance()
+    } else {
+      playPurrSound()
+      isHappy.value = true
+      setTimeout(() => {
+        isHappy.value = false
+      }, 1000)
+    }
+    
+    showCatMessage()
+  }
+  
+  // Resetear la bandera de interacción después de 3 segundos
+  setTimeout(() => {
+    isInteracting.value = false
+    // Solo ocultar si no está en estado full-visible
+    if (catState.value !== 'full-visible') {
+      scheduleHide()
+    }
+  }, 8000) // Más tiempo antes de ocultarse después de interactuar
+  
+  // Resetear el contador después de 5 segundos sin clics
+  setTimeout(() => {
+    clickCount = 0
+  }, 5000)
+}
+
+// Programar ocultación del gato
+const scheduleHide = () => {
+  if (!isInteracting.value) {
+    hideTimeout = setTimeout(() => {
+      hideCat()
+    }, 8000) // Aumentado de 3s a 8s
+  }
+}
 
 // Función para mostrar el gato
 const showCat = () => {
+  // No mostrar si el usuario está interactuando
+  if (isInteracting.value) return
+  
   isVisible.value = true
   catState.value = 'peeking'
   
   // Después de un momento, muestra más al gato
   setTimeout(() => {
-    if (isVisible.value) {
+    if (isVisible.value && !isInteracting.value) {
       catState.value = 'visible'
     }
   }, 500)
   
-  // Ocultar después de unos segundos
-  hideTimeout = setTimeout(() => {
-    hideCat()
-  }, 3000)
+  // Ocultar después de más tiempo
+  scheduleHide()
 }
 
 // Función para ocultar el gato
 const hideCat = () => {
+  // No ocultar si el usuario está interactuando
+  if (isInteracting.value) return
+  
   catState.value = 'peeking'
   setTimeout(() => {
-    catState.value = 'hidden'
-    setTimeout(() => {
-      isVisible.value = false
-    }, 500)
+    if (!isInteracting.value) {
+      catState.value = 'hidden'
+      setTimeout(() => {
+        if (!isInteracting.value) {
+          isVisible.value = false
+        }
+      }, 500)
+    }
   }, 300)
 }
 
@@ -96,7 +301,7 @@ const handleScroll = () => {
     const scrollDiff = Math.abs(currentScrollY - lastScrollY)
     
     // Si hay un scroll significativo, mostrar el gato
-    if (scrollDiff > 100 && !isVisible.value) {
+    if (scrollDiff > 100 && !isVisible.value && !isInteracting.value) {
       showCat()
     }
     
@@ -107,11 +312,11 @@ const handleScroll = () => {
 // Apariciones aleatorias
 const randomPeek = () => {
   peekInterval = setInterval(() => {
-    // 20% de probabilidad de aparecer cada 5 segundos
-    if (Math.random() < 0.2 && !isVisible.value) {
+    // 20% de probabilidad de aparecer cada 8 segundos (aumentado de 5s)
+    if (Math.random() < 0.2 && !isVisible.value && !isInteracting.value) {
       showCat()
     }
-  }, 5000)
+  }, 8000)
 }
 
 // Posicionar aleatoriamente el gato
@@ -154,12 +359,18 @@ onUnmounted(() => {
 .cat-navigator {
   position: fixed;
   z-index: 998;
-  pointer-events: none;
+  pointer-events: auto; /* Permitir clics en el gato */
 }
 
 .cat-container {
   position: fixed;
   transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  cursor: pointer;
+  pointer-events: auto; /* Asegurar que los clics funcionen */
+}
+
+.cat-container:hover {
+  transform: scale(1.05);
 }
 
 .cat {
@@ -179,6 +390,38 @@ onUnmounted(() => {
 
 .cat.visible {
   transform: translateY(-50%);
+}
+
+.cat.full-visible {
+  transform: translateY(-80%);
+}
+
+/* Animación de salto */
+.cat-jumping {
+  animation: cat-jump 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes cat-jump {
+  0%, 100% {
+    transform: translateY(-80%);
+  }
+  50% {
+    transform: translateY(-150%);
+  }
+}
+
+/* Animación de baile */
+.cat-dancing {
+  animation: cat-dance 0.5s ease-in-out infinite;
+}
+
+@keyframes cat-dance {
+  0%, 100% {
+    transform: translateY(-80%) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-90%) rotate(5deg);
+  }
 }
 
 /* Cabeza del gato */
@@ -252,6 +495,15 @@ onUnmounted(() => {
   border-radius: 50% 50% 50% 50%;
   top: 35%;
   animation: blink 4s infinite;
+  transition: all 0.3s ease;
+}
+
+/* Ojos felices (forma de medialuna) */
+.eye-happy {
+  height: 8px;
+  border-radius: 50% 50% 0 0;
+  transform: translateY(4px);
+  animation: none;
 }
 
 .eye-left {
@@ -305,6 +557,44 @@ onUnmounted(() => {
   top: 55%;
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* Boca */
+.mouth {
+  position: absolute;
+  width: 20px;
+  height: 10px;
+  top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mouth-happy {
+  opacity: 1;
+}
+
+.mouth-happy::before,
+.mouth-happy::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #333;
+  border-top: none;
+  border-right: none;
+  border-radius: 0 0 0 100%;
+}
+
+.mouth-happy::before {
+  left: 0;
+  transform: rotate(-20deg);
+}
+
+.mouth-happy::after {
+  right: 0;
+  transform: rotate(20deg) scaleX(-1);
 }
 
 /* Bigotes */
@@ -380,21 +670,168 @@ onUnmounted(() => {
   transform: translateX(-50%);
 }
 
+/* Cuerpo del gato */
+.cat-body {
+  position: absolute;
+  width: 70px;
+  height: 80px;
+  background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
+  border-radius: 40% 40% 30% 30%;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.cat-belly {
+  position: absolute;
+  width: 50px;
+  height: 60px;
+  background: #ffb84d;
+  border-radius: 50%;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Patas del gato */
+.cat-legs {
+  position: absolute;
+  top: 150px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+}
+
+.cat-leg {
+  width: 20px;
+  height: 40px;
+  background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
+  border-radius: 10px 10px 40% 40%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.cat-leg::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 15px;
+  background: #ffb84d;
+  border-radius: 50%;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Cola del gato */
+.cat-tail {
+  position: absolute;
+  width: 15px;
+  height: 80px;
+  background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
+  border-radius: 20px;
+  top: 100px;
+  right: -20px;
+  transform-origin: top;
+  animation: tail-wag 1s ease-in-out infinite;
+}
+
+@keyframes tail-wag {
+  0%, 100% {
+    transform: rotate(-10deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+/* Mensaje del gato */
+.cat-message {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  padding: 8px 15px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  animation: message-bounce 0.5s ease-out;
+  pointer-events: none;
+}
+
+.cat-message::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(255, 255, 255, 0.95);
+}
+
+@keyframes message-bounce {
+  0% {
+    transform: translateX(-50%) translateY(10px) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(-50%) translateY(-5px) scale(1.1);
+  }
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .cat-head {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
   }
   
   .ear {
-    width: 20px;
-    height: 25px;
+    width: 22px;
+    height: 28px;
+  }
+  
+  .cat-body {
+    width: 55px;
+    height: 65px;
+    top: 65px;
+  }
+  
+  .cat-legs {
+    top: 115px;
+  }
+  
+  .cat-leg {
+    width: 16px;
+    height: 32px;
+  }
+  
+  .cat-tail {
+    height: 65px;
+    top: 75px;
   }
   
   .cat-paw {
     width: 25px;
     height: 12px;
+  }
+  
+  .cat-message {
+    font-size: 12px;
+    padding: 6px 12px;
+    top: -35px;
   }
 }
 </style>

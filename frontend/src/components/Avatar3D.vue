@@ -54,21 +54,36 @@ const initThreeJS = () => {
   controls.autoRotate = true // ✅ Auto-rotación activada
   controls.autoRotateSpeed = 0.5 // Velocidad de rotación
 
-  // Luces
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
+  // Luces mejoradas para mejor visibilidad
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.2) // Mayor luz ambiental
   scene.add(ambientLight)
 
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8)
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5) // Luz direccional más intensa
   directionalLight.position.set(5, 5, 5)
   scene.add(directionalLight)
 
-  const pointLight1 = new THREE.PointLight(0x667eea, 1, 100)
+  // Luz frontal para iluminar la cara
+  const frontLight = new THREE.DirectionalLight(0xffffff, 1.2)
+  frontLight.position.set(0, 0, 5)
+  scene.add(frontLight)
+
+  // Luz de relleno desde arriba
+  const topLight = new THREE.DirectionalLight(0xffffff, 0.8)
+  topLight.position.set(0, 10, 0)
+  scene.add(topLight)
+
+  const pointLight1 = new THREE.PointLight(0x667eea, 1.5, 100) // Más intenso
   pointLight1.position.set(-3, 2, 3)
   scene.add(pointLight1)
 
-  const pointLight2 = new THREE.PointLight(0xf093fb, 1, 100)
+  const pointLight2 = new THREE.PointLight(0xf093fb, 1.5, 100) // Más intenso
   pointLight2.position.set(3, -2, 3)
   scene.add(pointLight2)
+
+  // Luz trasera para contorno
+  const backLight = new THREE.PointLight(0xffffff, 1, 100)
+  backLight.position.set(0, 2, -3)
+  scene.add(backLight)
 
   // Cargar avatar desde Ready Player Me
   loadReadyPlayerMeAvatar()
