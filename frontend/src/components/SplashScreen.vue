@@ -68,6 +68,8 @@ onMounted(() => {
     position: fixed;
     top: 0;
     left: 0;
+    margin: 0;
+    padding: 0;
     width: 100vw;
     height: 100vh;
     z-index: 9999;
@@ -82,6 +84,8 @@ onMounted(() => {
     position: absolute;
     top: 0;
     left: 0;
+    margin: 0;
+    padding: 0;
     width: 100%;
     height: 100%;
     transform-origin: center;
@@ -134,7 +138,7 @@ onMounted(() => {
     }
 
     .svg-mask rect {
-        width: 100vw;
+        width: 105vw;
         height: 100vh;
     }
 }
