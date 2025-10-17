@@ -100,7 +100,7 @@ onMounted(() => {
 .mask-text {
     font-family: 'Montserrat', sans-serif;
     font-weight: 900;
-    font-size: 90px;
+    font-size: 70px;
     letter-spacing: 12px;
     fill: black;
     transform-origin: center;
