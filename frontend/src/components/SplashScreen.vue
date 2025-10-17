@@ -6,8 +6,7 @@
                 <defs>
                     <mask id="textMask">
                         <rect width="100%" height="100%" fill="white" />
-                        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="mask-text">DANILORE
-                            DEV</text>
+                        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="mask-text">DANILOREDEV</text>
                     </mask>
                 </defs>
                 <!-- Rectángulo negro con máscara de texto que cubre todo -->
@@ -50,7 +49,7 @@ onMounted(() => {
     // 3. Zoom del SVG completo
     timeline.to('.svg-mask', {
         duration: 1.5,
-        scale: 10,
+        scale: 900,
         ease: 'power2.inOut'
     })
 
@@ -109,42 +108,42 @@ onMounted(() => {
 /* Responsive */
 @media (max-width: 1300px) {
     .mask-text {
-        font-size: 60px;
+        font-size: 50px;
         letter-spacing: 6px;
     }
 }
 
 @media (max-width: 992px) {
     .mask-text {
-        font-size: 50px;
+        font-size: 40px;
         letter-spacing: 5px;
     }
 }
 
 @media (max-width: 768px) {
     .mask-text {
-        font-size: 40px;
+        font-size: 30px;
         letter-spacing: 4px;
     }
 }
 
 @media (max-width: 576px) {
     .mask-text {
-        font-size: 32px;
+        font-size: 25px;
         letter-spacing: 3px;
     }
 }
 
 @media (max-width: 480px) {
     .mask-text {
-        font-size: 28px;
+        font-size: 18px;
         letter-spacing: 2px;
     }
 }
 
 @media (max-width: 380px) {
     .mask-text {
-        font-size: 24px;
+        font-size: 16px;
         letter-spacing: 1px;
     }
 }
