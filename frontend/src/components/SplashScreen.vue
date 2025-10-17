@@ -86,8 +86,8 @@ onMounted(() => {
     left: 0;
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     transform-origin: center;
 }
 
@@ -100,46 +100,52 @@ onMounted(() => {
     font-family: 'Montserrat', sans-serif;
     font-weight: 900;
     font-size: 70px;
-    letter-spacing: 12px;
+    letter-spacing: 8px;
     fill: black;
     transform-origin: center;
 }
 
-/* Transición de salida */
-.splash-fade-enter-active,
-.splash-fade-leave-active {
-    transition: opacity 0.5s ease;
-}
-
-.splash-fade-enter-from,
-.splash-fade-leave-to {
-    opacity: 0;
-}
 
 /* Responsive */
+@media (max-width: 1300px) {
+    .mask-text {
+        font-size: 60px;
+        letter-spacing: 6px;
+    }
+}
+
+@media (max-width: 992px) {
+    .mask-text {
+        font-size: 50px;
+        letter-spacing: 5px;
+    }
+}
+
 @media (max-width: 768px) {
     .mask-text {
-        font-weight: 600;
-        font-size: 50px;
+        font-size: 40px;
         letter-spacing: 4px;
+    }
+}
+
+@media (max-width: 576px) {
+    .mask-text {
+        font-size: 32px;
+        letter-spacing: 3px;
     }
 }
 
 @media (max-width: 480px) {
     .mask-text {
-        font-weight: 10;
-        font-size: 2px;
+        font-size: 28px;
+        letter-spacing: 2px;
+    }
+}
+
+@media (max-width: 380px) {
+    .mask-text {
+        font-size: 24px;
         letter-spacing: 1px;
-        width: 100vw;
-    }
-
-    .svg-mask {
-        width: 100vw;
-    }
-
-    .svg-mask rect {
-        width: 105vw;
-        height: 100vh;
     }
 }
 </style>
