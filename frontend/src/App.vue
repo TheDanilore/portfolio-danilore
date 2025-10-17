@@ -25,12 +25,10 @@ onMounted(() => {
     <SplashScreen v-if="showSplash" @animation-complete="handleSplashComplete" />
     
     <!-- Contenido principal del portfolio -->
-    <Transition name="fade" mode="out-in">
-      <RouterView v-if="!showSplash" />
-    </Transition>
-
-    <!-- Gatito navegador -->
-    <CatNavigator v-if="!showSplash" />
+    <div v-show="!showSplash" class="main-content">
+      <RouterView />
+      <CatNavigator />
+    </div>
   </div>
 </template>
 
@@ -92,6 +90,19 @@ body {
 
 #app {
   min-height: 100vh;
+}
+
+/* Contenido principal */
+.main-content {
+  opacity: 0;
+  animation: fadeIn 0.8s ease forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
 }
 
 /* Transición fade */
