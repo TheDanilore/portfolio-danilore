@@ -16,7 +16,7 @@
                     </mask>
                 </defs>
                 <!-- Rectángulo negro con máscara de texto que cubre todo -->
-                <rect width="100vw" height="100vh" fill="#000000" mask="url(#textMask)"/>
+                <rect width="100%" height="100%" fill="#000000" mask="url(#textMask)"/>
             </svg>
         </div>
     </Transition>
@@ -87,14 +87,14 @@ onMounted(() => {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     transform-origin: center;
 }
 
 .svg-mask rect {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 }
 
 .mask-text {
@@ -132,7 +132,7 @@ onMounted(() => {
     }
     
     .svg-mask {
-        width: 95%;
+        width: 100vw;
     }
 }
 </style>
