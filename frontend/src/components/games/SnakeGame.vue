@@ -357,11 +357,15 @@ onUnmounted(() => {
     padding: 2rem;
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     min-height: 100vh;
+    width: 100%;
+    height: 100%;
     position: relative;
+    box-sizing: border-box;
 }
 
 .game-info {
-    width: 600px;
+    width: 100%;
+    max-width: 600px;
     margin-bottom: 1rem;
 }
 
@@ -382,192 +386,182 @@ onUnmounted(() => {
 .high-score {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
 
-    .score,
-    .level-display,
-    .high-score {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.3rem;
+.label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.value {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.level-display {
+    text-align: center;
+}
+
+.level-value {
+    font-size: 2.5rem;
+}
+
+.level-name {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    color: #f093fb;
+    font-weight: 600;
+    margin-top: -0.3rem;
+}
+
+canvas {
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+    max-width: 90vmin;
+    max-height: 60vh;
+}
+
+.game-over-overlay,
+.start-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.game-over-content,
+.start-content {
+    text-align: center;
+    color: white;
+    padding: 2rem;
+    max-width: 600px;
+}
+
+.game-over-content h2,
+.start-content h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.start-content p {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+}
+
+.level-info-list {
+    margin: 1.5rem 0;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+}
+
+.level-info-list p {
+    margin-bottom: 0.5rem;
+    color: #f093fb;
+}
+
+.level-info-list ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.level-info-list li {
+    padding: 0.3rem 0;
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+.final-score,
+.level-reached {
+    font-size: 1.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.new-record {
+    font-size: 1.8rem;
+    color: #ffd700;
+    margin-bottom: 1rem;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
     }
-
-    .label {
-        font-size: 0.9rem;
+    50% {
         opacity: 0.8;
-        margin-bottom: 0.3rem;
+        transform: scale(1.05);
     }
+}
 
-    .value {
-        font-size: 2rem;
-        font-weight: 700;
-        font-family: 'Courier New', monospace;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .level-display {
-        text-align: center;
-    }
-
-    .level-value {
-        font-size: 2.5rem;
-    }
-
-    .level-name {
-        font-size: 0.75rem;
-        opacity: 0.9;
-        color: #f093fb;
-        font-weight: 600;
-        margin-top: -0.3rem;
-    }
-
-    canvas {
-        border: 4px solid rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
-        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
-    }
-
-    .game-over-overlay,
-    .start-overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10;
-    }
-
-    .game-over-content,
-    .start-content {
-        text-align: center;
-        color: white;
-        padding: 2rem;
-    }
-
-    .game-over-content h2,
-    .start-content h2 {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        background-clip: text;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .start-content p {
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-        opacity: 0.9;
-    }
-
-    .level-info-list {
-        margin: 1.5rem 0;
-        text-align: left;
-        background: rgba(255, 255, 255, 0.1);
-        padding: 1rem 1.5rem;
-        border-radius: 10px;
-        backdrop-filter: blur(5px);
-    }
-
-    .level-info-list p {
-        margin-bottom: 0.5rem;
-        color: #f093fb;
-    }
-
-    .level-info-list ul {
-        list-style: none;
-        padding-left: 0;
-    }
-
-    .level-info-list li {
-        padding: 0.3rem 0;
-        font-size: 0.95rem;
-        opacity: 0.85;
-    }
-
-    .final-score,
-    .level-reached {
-        font-size: 1.5rem;
-        margin-bottom: 0.8rem;
-    }
-
-    .new-record {
-        font-size: 1.8rem;
-        color: #ffd700;
-        margin-bottom: 1rem;
-        animation: pulse 1s infinite;
-    }
-
-    @keyframes pulse {
-
-        0%,
-        100% {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        50% {
-            opacity: 0.8;
-            transform: scale(1.05);
-        }
-    }
-
-    .restart-btn,
-    .start-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 1rem 2rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        font-size: 1.2rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 1rem;
-    }
-
-    .restart-btn:hover,
-    .start-btn:hover {
-        transform: translateY(-3px) scale(1.05);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
-    }
-
-    .controls-info {
-        margin-top: 1rem;
-        text-align: center;
-        color: white;
-        opacity: 0.7;
-        font-size: 0.9rem;
-    }
-
-    .controls-info p {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-    }
-
-    .controls-info svg {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 0.3rem;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-    }
-
-    .controls-info svg:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: scale(1.1);
-    }
-
+.restart-btn,
+.start-btn {
+    display: inline-flex;
+    align-items: center;
     gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.restart-btn:hover,
+.start-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+}
+
+.controls-info {
+    margin-top: 1rem;
+    text-align: center;
+    color: white;
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+.controls-info p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.controls-info svg {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.3rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.controls-info svg:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }
 
 /* Responsive */
@@ -577,27 +571,38 @@ onUnmounted(() => {
     }
 
     .game-info {
-        width: 100%;
-        max-width: 400px;
+        max-width: 100%;
     }
 
     canvas {
-        width: 100%;
-        max-width: 400px;
-        height: auto;
+        max-width: 95vw;
+        max-height: 50vh;
     }
 
     .score-board {
         padding: 0.8rem 1rem;
+        gap: 1rem;
     }
 
     .value {
         font-size: 1.5rem;
     }
 
+    .level-value {
+        font-size: 2rem;
+    }
+
     .game-over-content h2,
     .start-content h2 {
         font-size: 2rem;
+    }
+
+    .start-content p {
+        font-size: 1rem;
+    }
+
+    .level-info-list {
+        padding: 0.8rem 1rem;
     }
 }
 </style>

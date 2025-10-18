@@ -66,18 +66,18 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   z-index: 10000;
-  padding: 1rem;
+  padding: 0;
+  overflow: hidden;
 }
 
 .modal-container {
   position: relative;
   width: 100%;
   height: 100%;
-  max-width: 100%;
-  max-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .modal-close-btn {
@@ -112,7 +112,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: auto;
+  overflow: hidden;
 }
 
 /* Transitions */
