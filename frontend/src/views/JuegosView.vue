@@ -164,10 +164,11 @@
                             </p>
                             <div class="game-tech">
                                 <span class="tech-tag">Vue.js 3</span>
-                                <div class="feature">
-                                    <IconComponent name="download" :size="16" />
-                                    <span>Aliens con vida</span>
-                                </div>
+                                <span class="tech-tag">Canvas API</span>
+                            </div>
+                            <div class="feature">
+                                <IconComponent name="download" :size="16" />
+                                <span>Aliens con vida</span>
                             </div>
                         </div>
                     </div>
@@ -398,10 +399,13 @@ const closeGame = () => {
 }
 
 @keyframes tetrisPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
         opacity: 0.8;
     }
+
     50% {
         transform: scale(1.05);
         opacity: 1;
@@ -439,9 +443,12 @@ const closeGame = () => {
 }
 
 @keyframes blockShine {
-    0%, 100% {
+
+    0%,
+    100% {
         opacity: 0.8;
     }
+
     50% {
         opacity: 1;
     }
@@ -460,9 +467,12 @@ const closeGame = () => {
 }
 
 @keyframes ballBounce {
-    0%, 100% {
+
+    0%,
+    100% {
         bottom: 40px;
     }
+
     50% {
         bottom: 120px;
     }
@@ -482,9 +492,12 @@ const closeGame = () => {
 }
 
 @keyframes paddleMove {
-    0%, 100% {
+
+    0%,
+    100% {
         left: 40%;
     }
+
     50% {
         left: 60%;
     }
@@ -567,9 +580,12 @@ const closeGame = () => {
 }
 
 @keyframes alienFloat {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateY(0) scale(1);
     }
+
     50% {
         transform: translateY(-10px) scale(1.05);
     }
@@ -588,9 +604,12 @@ const closeGame = () => {
 }
 
 @keyframes siPlayerMove {
-    0%, 100% {
+
+    0%,
+    100% {
         left: 40%;
     }
+
     50% {
         left: 60%;
     }
@@ -612,6 +631,7 @@ const closeGame = () => {
         bottom: 50px;
         opacity: 1;
     }
+
     100% {
         bottom: 150px;
         opacity: 0;
