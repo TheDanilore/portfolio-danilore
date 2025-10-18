@@ -142,21 +142,32 @@
                     </div>
 
                     <!-- Placeholder Game 4 -->
-                    <div class="game-card coming-soon">
+                    <div class="game-card" @click="openGame('space-invaders')">
                         <div class="game-preview">
-                            <div class="coming-soon-preview">
-                                <IconComponent name="code" />
-                                <span>Próximamente</span>
+                            <div class="space-invaders-preview">
+                                <div class="si-container">
+                                    <div class="si-aliens">
+                                        <div class="si-alien" v-for="n in 6" :key="n"></div>
+                                    </div>
+                                    <div class="si-player"></div>
+                                    <div class="si-bullet"></div>
+                                </div>
+                            </div>
+                            <div class="play-overlay">
+                                <IconComponent name="arrow-right" :size="48" color="white" />
                             </div>
                         </div>
                         <div class="game-content">
-                            <h3 class="game-title">Memory Game</h3>
+                            <h3 class="game-title">Space Invaders</h3>
                             <p class="game-description">
-                                Juego de memoria con cartas. Encuentra todas las parejas.
+                                ¡Defiende la Tierra! Dispara a los aliens y recoge power-ups.
                             </p>
                             <div class="game-tech">
                                 <span class="tech-tag">Vue.js 3</span>
-                                <span class="tech-tag">CSS Animations</span>
+                                <div class="feature">
+                                    <IconComponent name="download" :size="16" />
+                                    <span>Aliens con vida</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -169,6 +180,7 @@
             <SnakeGame v-if="currentGame === 'snake'" />
             <TetrisGame v-if="currentGame === 'tetris'" />
             <BreakoutGame v-if="currentGame === 'breakout'" />
+            <SpaceInvadersGame v-if="currentGame === 'space-invaders'" />
         </GameModal>
 
         <FooterSection />
@@ -186,6 +198,7 @@ import GameModal from '@/components/games/GameModal.vue'
 import SnakeGame from '@/components/games/SnakeGame.vue'
 import TetrisGame from '@/components/games/TetrisGame.vue'
 import BreakoutGame from '@/components/games/BreakoutGame.vue'
+import SpaceInvadersGame from '@/components/games/SpaceInvadersGame.vue'
 
 const isGameModalOpen = ref(false)
 const currentGame = ref(null)
@@ -474,6 +487,134 @@ const closeGame = () => {
     }
     50% {
         left: 60%;
+    }
+}
+
+.space-invaders-preview {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    position: relative;
+}
+
+.si-container {
+    position: relative;
+    width: 160px;
+    height: 200px;
+}
+
+.si-aliens {
+    display: grid;
+    grid-template-columns: repeat(3, 40px);
+    gap: 8px;
+    margin-bottom: 2rem;
+}
+
+.si-alien {
+    width: 40px;
+    height: 30px;
+    background: linear-gradient(135deg, #ff00ff 0%, #ff0066 100%);
+    border-radius: 4px;
+    position: relative;
+    animation: alienFloat 2s ease-in-out infinite;
+}
+
+.si-alien::before,
+.si-alien::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    top: 8px;
+}
+
+.si-alien::before {
+    left: 8px;
+}
+
+.si-alien::after {
+    right: 8px;
+}
+
+.si-alien:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.si-alien:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.si-alien:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.si-alien:nth-child(4) {
+    animation-delay: 0.1s;
+}
+
+.si-alien:nth-child(5) {
+    animation-delay: 0.3s;
+}
+
+.si-alien:nth-child(6) {
+    animation-delay: 0.5s;
+}
+
+@keyframes alienFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.05);
+    }
+}
+
+.si-player {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 30px;
+    background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    animation: siPlayerMove 2s ease-in-out infinite;
+}
+
+@keyframes siPlayerMove {
+    0%, 100% {
+        left: 40%;
+    }
+    50% {
+        left: 60%;
+    }
+}
+
+.si-bullet {
+    position: absolute;
+    width: 4px;
+    height: 15px;
+    background: #ffff00;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: bulletFly 1.5s linear infinite;
+}
+
+@keyframes bulletFly {
+    0% {
+        bottom: 50px;
+        opacity: 1;
+    }
+    100% {
+        bottom: 150px;
+        opacity: 0;
     }
 }
 

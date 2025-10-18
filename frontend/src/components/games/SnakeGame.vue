@@ -50,6 +50,52 @@
                     <IconComponent name="play" />
                     Iniciar Juego
                 </button>
+                <div class="controls-info">
+                    <p><strong>←</strong> <strong>↑</strong> <strong>→</strong> <strong>↓</strong> = Mover</p>
+                    <p><strong>ESPACIO</strong> = Empezar</p>
+                    <p><strong>P</strong> o <strong>ESC</strong> = Pausa</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pause Overlay -->
+        <div v-if="isPaused && gameStarted && !gameOver" class="pause-overlay">
+            <div class="pause-content">
+                <h2>⏸️ PAUSA</h2>
+                <div class="pause-info">
+                    <p>Puntuación: {{ score }}</p>
+                    <p>Nivel: {{ level }} - {{ LEVEL_CONFIG[level]?.name }}</p>
+                </div>
+                <button @click="togglePause" class="resume-btn">
+                    <IconComponent name="play" />
+                    Continuar
+                </button>
+                <div class="controls-info">
+                    <p>
+                        <IconComponent name="gamepad" :size="16" />
+                        Presiona <strong>P</strong> o <strong>ESC</strong> para continuar
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div v-if="gameOver" class="game-over-overlay">
+            <div class="game-over-content">
+                <h2>¡Game Over!</h2>
+                <div class="final-score">Puntuación: {{ score }}</div>
+                <div class="level-reached">Nivel Alcanzado: {{ level }}</div>
+                <div v-if="isNewRecord" class="new-record">🎉 ¡Nuevo Récord! 🎉</div>
+                <button @click="restartGame" class="restart-btn">
+                    <IconComponent name="arrow-right" :size="20" />
+                    Jugar de Nuevo
+                </button>
+                <div class="controls-info">
+                    <p>
+                        <IconComponent name="gamepad" :size="16" />
+                        Presiona <strong>ESPACIO</strong> para reiniciar
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -59,7 +105,7 @@
                 <IconComponent name="arrow-down" :size="20" />
                 <IconComponent name="arrow-left" :size="20" />
                 <IconComponent name="arrow-right" :size="20" />
-                Usa las flechas para moverte
+                Usa las flechas para moverte | <strong>P</strong> = Pausa
             </p>
         </div>
     </div>
@@ -82,6 +128,7 @@ const score = ref(0)
 const highScore = ref(0)
 const gameOver = ref(false)
 const gameStarted = ref(false)
+const isPaused = ref(false)
 const isNewRecord = ref(false)
 const level = ref(1)
 const speed = ref(200) // Velocidad inicial más lenta (200ms)
@@ -178,9 +225,13 @@ const spawnFood = () => {
         validPosition = !snake.some(segment => segment.x === food.x && segment.y === food.y)
     }
 }
+const togglePause = () => {
+    if (!gameStarted.value || gameOver.value) return
+    isPaused.value = !isPaused.value
+}
 
 const update = () => {
-    if (gameOver.value) return
+    if (gameOver.value || isPaused.value) return
 
     // Actualizar dirección
     direction = { ...nextDirection }
@@ -319,7 +370,29 @@ const endGame = () => {
 }
 
 const handleKeyPress = (event) => {
-    if (!gameStarted.value || gameOver.value) return
+    // Handle start
+    if (!gameStarted.value && event.code === 'Space') {
+        event.preventDefault()
+        startGame()
+        return
+    }
+
+    // Handle pause/unpause
+    if (gameStarted.value && !gameOver.value && (event.code === 'KeyP' || event.code === 'Escape')) {
+        event.preventDefault()
+        togglePause()
+        return
+    }
+
+    // Handle restart
+    if (gameOver.value && event.code === 'Space') {
+        event.preventDefault()
+        restartGame()
+        return
+    }
+
+    // Game controls (only when not paused)
+    if (!gameStarted.value || gameOver.value || isPaused.value) return
 
     const key = event.key
 
@@ -430,7 +503,8 @@ canvas {
 }
 
 .game-over-overlay,
-.start-overlay {
+.start-overlay,
+.pause-overlay {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.9);
@@ -441,7 +515,8 @@ canvas {
 }
 
 .game-over-content,
-.start-content {
+.start-content,
+.pause-content {
     text-align: center;
     color: white;
     padding: 2rem;
@@ -449,7 +524,8 @@ canvas {
 }
 
 .game-over-content h2,
-.start-content h2 {
+.start-content h2,
+.pause-content h2 {
     font-size: 3rem;
     font-weight: 700;
     margin-bottom: 1rem;
@@ -457,6 +533,17 @@ canvas {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+.pause-info {
+    margin: 2rem 0;
+}
+
+.pause-info p {
+    font-size: 1.3rem;
+    margin: 0.8rem 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
 }
 
 .start-content p {
@@ -515,7 +602,8 @@ canvas {
 }
 
 .restart-btn,
-.start-btn {
+.start-btn,
+.resume-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -532,7 +620,8 @@ canvas {
 }
 
 .restart-btn:hover,
-.start-btn:hover {
+.start-btn:hover,
+.resume-btn:hover {
     transform: translateY(-3px) scale(1.05);
     box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
 }
