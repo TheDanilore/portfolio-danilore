@@ -336,6 +336,12 @@ const handleCatClick = () => {
     hideTimeout = null
   }
   
+  // Reiniciar timeout de interacción (el gato se queda 10 segundos después del último clic)
+  setTimeout(() => {
+    isInteracting.value = false
+    scheduleHide(10000) // 10 segundos después de interacción
+  }, 10000)
+  
   // Diferentes comportamientos según el número de clics
   if (clickCount === 1) {
     // Primer clic: Mostrar completo + Miau + Sonrisa
@@ -414,11 +420,11 @@ const handleCatClick = () => {
 }
 
 // Programar ocultación del gato
-const scheduleHide = () => {
+const scheduleHide = (duration = 3000) => {
   if (!isInteracting.value) {
     hideTimeout = setTimeout(() => {
       hideCat()
-    }, 8000) // Aumentado de 3s a 8s
+    }, duration) // 3s sin clic, 10s con clic
   }
 }
 
@@ -629,11 +635,14 @@ onUnmounted(() => {
 /* Cabeza del gato */
 .cat-head {
   position: relative;
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
-  border-radius: 45% 45% 40% 40%;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  width: 90px;
+  height: 85px;
+  background: linear-gradient(145deg, #ffb347 0%, #ffa500 50%, #ff8c00 100%);
+  border-radius: 48% 48% 42% 42%;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.3),
+    inset 0 -5px 15px rgba(255, 140, 0, 0.4),
+    inset 0 5px 15px rgba(255, 179, 71, 0.3);
   animation: cat-breathe 2s ease-in-out infinite;
 }
 
@@ -649,33 +658,37 @@ onUnmounted(() => {
 /* Orejas */
 .ear {
   position: absolute;
-  width: 30px;
-  height: 35px;
-  background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
-  border-radius: 80% 80% 0 0;
-  top: -12px;
+  width: 28px;
+  height: 38px;
+  background: linear-gradient(145deg, #ffb347 0%, #ffa500 50%, #ff8c00 100%);
+  border-radius: 85% 85% 0 0;
+  top: -15px;
+  box-shadow: 
+    inset 0 -3px 8px rgba(255, 140, 0, 0.3),
+    2px 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .ear::after {
   content: '';
   position: absolute;
-  width: 15px;
-  height: 20px;
-  background: #ffb84d;
-  border-radius: 80% 80% 0 0;
-  top: 5px;
+  width: 14px;
+  height: 22px;
+  background: linear-gradient(145deg, #ffd699 0%, #ffcc80 100%);
+  border-radius: 85% 85% 0 0;
+  top: 6px;
   left: 50%;
   transform: translateX(-50%);
+  box-shadow: inset 0 1px 3px rgba(255, 140, 0, 0.2);
 }
 
 .ear-left {
-  left: 10px;
-  transform: rotate(-20deg);
+  left: 8px;
+  transform: rotate(-25deg);
 }
 
 .ear-right {
-  right: 10px;
-  transform: rotate(20deg);
+  right: 8px;
+  transform: rotate(25deg);
 }
 
 /* Cara */
@@ -691,41 +704,56 @@ onUnmounted(() => {
 /* Ojos */
 .eye {
   position: absolute;
-  width: 12px;
-  height: 16px;
-  background: #fff;
-  border-radius: 50% 50% 50% 50%;
-  top: 35%;
+  width: 14px;
+  height: 18px;
+  background: linear-gradient(145deg, #fff 0%, #f0f0f0 100%);
+  border-radius: 55% 55% 50% 50%;
+  top: 32%;
   animation: blink 4s infinite;
   transition: all 0.3s ease;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 /* Ojos felices (forma de medialuna) */
 .eye-happy {
-  height: 8px;
+  height: 9px;
   border-radius: 50% 50% 0 0;
   transform: translateY(4px);
   animation: none;
 }
 
 .eye-left {
-  left: 25%;
+  left: 22%;
 }
 
 .eye-right {
-  right: 25%;
+  right: 22%;
 }
 
 .pupil {
   position: absolute;
-  width: 6px;
-  height: 8px;
-  background: #000;
+  width: 7px;
+  height: 9px;
+  background: radial-gradient(circle at 30% 30%, #333 0%, #000 100%);
   border-radius: 50%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   animation: look-around 5s infinite;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.pupil::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  top: 20%;
+  left: 25%;
 }
 
 @keyframes blink {
@@ -752,11 +780,26 @@ onUnmounted(() => {
 /* Nariz */
 .nose {
   position: absolute;
-  width: 8px;
-  height: 6px;
-  background: #ff6b6b;
+  width: 10px;
+  height: 8px;
+  background: linear-gradient(145deg, #ff8b8b 0%, #ff6b6b 50%, #ff4757 100%);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  top: 55%;
+  top: 52%;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 2px rgba(255, 71, 87, 0.4),
+    inset 0 1px 1px rgba(255, 139, 139, 0.6);
+}
+
+.nose::after {
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 4px;
+  background: linear-gradient(to bottom, #ff4757 0%, transparent 100%);
+  bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -802,40 +845,44 @@ onUnmounted(() => {
 /* Bigotes */
 .whiskers {
   position: absolute;
-  top: 55%;
+  top: 52%;
 }
 
 .whiskers-left {
-  left: -15px;
+  left: -18px;
 }
 
 .whiskers-right {
-  right: -15px;
+  right: -18px;
   transform: scaleX(-1);
 }
 
 .whisker {
-  width: 20px;
-  height: 1px;
-  background: #333;
-  margin: 4px 0;
+  width: 24px;
+  height: 1.5px;
+  background: linear-gradient(to right, rgba(51, 51, 51, 0.9) 0%, rgba(51, 51, 51, 0.5) 70%, transparent 100%);
+  margin: 5px 0;
   border-radius: 50%;
   transform-origin: right;
   animation: whisker-move 2s ease-in-out infinite;
+  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.2);
 }
 
 .whisker:nth-child(1) {
-  transform: rotate(-10deg);
+  transform: rotate(-15deg);
+  width: 26px;
 }
 
 .whisker:nth-child(2) {
   transform: rotate(0deg);
   animation-delay: 0.2s;
+  width: 24px;
 }
 
 .whisker:nth-child(3) {
-  transform: rotate(10deg);
+  transform: rotate(15deg);
   animation-delay: 0.4s;
+  width: 22px;
 }
 
 @keyframes whisker-move {
@@ -850,78 +897,105 @@ onUnmounted(() => {
 /* Pata */
 .cat-paw {
   position: absolute;
-  width: 30px;
-  height: 15px;
-  background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
-  border-radius: 40% 40% 50% 50%;
+  width: 32px;
+  height: 16px;
+  background: linear-gradient(145deg, #ffb347 0%, #ffa500 50%, #ff8c00 100%);
+  border-radius: 42% 42% 52% 52%;
   bottom: -10px;
   left: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 
+    0 6px 18px rgba(0, 0, 0, 0.25),
+    inset 0 -2px 6px rgba(255, 140, 0, 0.3);
 }
 
 .cat-paw::after {
   content: '';
   position: absolute;
-  width: 20px;
-  height: 10px;
-  background: #ffb84d;
+  width: 22px;
+  height: 11px;
+  background: linear-gradient(145deg, #ffd699 0%, #ffcc80 50%, #ffb84d 100%);
   border-radius: 50%;
-  bottom: 0;
+  bottom: 1px;
   left: 50%;
   transform: translateX(-50%);
+  box-shadow: inset 0 1px 3px rgba(255, 140, 0, 0.2);
 }
 
 /* Cuerpo del gato */
 .cat-body {
   position: absolute;
-  width: 70px;
-  height: 80px;
-  background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
-  border-radius: 40% 40% 30% 30%;
-  top: 90px;
+  width: 75px;
+  height: 85px;
+  background: linear-gradient(145deg, #ffb347 0%, #ffa500 50%, #ff8c00 100%);
+  border-radius: 42% 42% 35% 35%;
+  top: 80px;
   left: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 
+    0 12px 30px rgba(0, 0, 0, 0.25),
+    inset 0 -8px 20px rgba(255, 140, 0, 0.3),
+    inset 0 8px 20px rgba(255, 179, 71, 0.2);
 }
 
 .cat-belly {
   position: absolute;
-  width: 50px;
-  height: 60px;
-  background: #ffb84d;
+  width: 52px;
+  height: 65px;
+  background: linear-gradient(145deg, #ffd699 0%, #ffcc80 50%, #ffb84d 100%);
   border-radius: 50%;
-  top: 10px;
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
+  box-shadow: 
+    inset 0 2px 8px rgba(255, 140, 0, 0.2),
+    0 2px 4px rgba(255, 255, 255, 0.3);
 }
 
 /* Patas del gato */
 .cat-legs {
   position: absolute;
-  top: 150px;
+  top: 148px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 20px;
+  gap: 22px;
 }
 
 .cat-leg {
-  width: 20px;
-  height: 40px;
-  background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
-  border-radius: 10px 10px 40% 40%;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 22px;
+  height: 42px;
+  background: linear-gradient(145deg, #ffb347 0%, #ffa500 50%, #ff8c00 100%);
+  border-radius: 12px 12px 40% 40%;
+  box-shadow: 
+    0 6px 18px rgba(0, 0, 0, 0.25),
+    inset -2px 0 8px rgba(255, 140, 0, 0.3),
+    inset 2px 0 8px rgba(255, 179, 71, 0.2);
 }
 
 .cat-leg::after {
   content: '';
   position: absolute;
-  width: 22px;
-  height: 15px;
-  background: #ffb84d;
+  width: 24px;
+  height: 16px;
+  background: linear-gradient(145deg, #ffd699 0%, #ffcc80 50%, #ffb84d 100%);
   border-radius: 50%;
-  bottom: -5px;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.2),
+    inset 0 1px 3px rgba(255, 140, 0, 0.2);
+}
+
+.cat-leg::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 140, 0, 0.3);
+  border-radius: 50%;
+  bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -929,22 +1003,38 @@ onUnmounted(() => {
 /* Cola del gato */
 .cat-tail {
   position: absolute;
-  width: 15px;
-  height: 80px;
-  background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
-  border-radius: 20px;
-  top: 110px;
-  right: 20px;
-  transform-origin: top;
-  animation: tail-wag 1s ease-in-out infinite;
+  width: 14px;
+  height: 85px;
+  background: linear-gradient(145deg, #ffb347 0%, #ffa500 40%, #ff8c00 100%);
+  border-radius: 50% 50% 25px 25px;
+  top: 100px;
+  right: 18px;
+  transform-origin: top center;
+  animation: tail-wag 1.2s ease-in-out infinite;
+  box-shadow: 
+    2px 2px 12px rgba(0, 0, 0, 0.25),
+    inset -2px 0 8px rgba(255, 140, 0, 0.3);
+}
+
+.cat-tail::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: linear-gradient(145deg, #ffcc80 0%, #ff8c00 100%);
+  border-radius: 50%;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes tail-wag {
   0%, 100% {
-    transform: rotate(300deg);
+    transform: rotate(-60deg);
   }
   50% {
-    transform: rotate(100deg);
+    transform: rotate(-80deg);
   }
 }
 
