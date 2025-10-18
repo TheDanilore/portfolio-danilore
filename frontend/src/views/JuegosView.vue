@@ -80,6 +80,10 @@
                             </div>
                             <div class="game-features">
                                 <div class="feature">
+                                    <IconComponent name="gamepad" />
+                                    <span>Controles con teclado</span>
+                                </div>
+                                <div class="feature">
                                     <IconComponent name="arrow-up" :size="16" />
                                     <span>Rotación de piezas</span>
                                 </div>
@@ -126,6 +130,10 @@
                             </div>
                             <div class="game-features">
                                 <div class="feature">
+                                    <IconComponent name="gamepad" />
+                                    <span>Controles con teclado</span>
+                                </div>
+                                <div class="feature">
                                     <IconComponent name="arrow-left" :size="16" />
                                     <span>Power-ups únicos</span>
                                 </div>
@@ -166,9 +174,19 @@
                                 <span class="tech-tag">Vue.js 3</span>
                                 <span class="tech-tag">Canvas API</span>
                             </div>
-                            <div class="feature">
-                                <IconComponent name="download" :size="16" />
-                                <span>Aliens con vida</span>
+                            <div class="game-features">
+                                <div class="feature">
+                                    <IconComponent name="gamepad" />
+                                    <span>Controles con teclado</span>
+                                </div>
+                                <div class="feature">
+                                    <IconComponent name="trophy" />
+                                    <span>Sistema de puntuación</span>
+                                </div>
+                                <div class="feature">
+                                    <IconComponent name="download" :size="16" />
+                                    <span>Aliens con vida</span>
+                                </div>
                             </div>
                         </div>
                     </div>
