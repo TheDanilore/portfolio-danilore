@@ -6,7 +6,7 @@
       </router-link>
 
       <!-- Desktop Navigation -->
-      <nav class="nav-desktop" v-if="!isProjectsPage">
+      <nav class="nav-desktop" v-if="!isProjectsPage && !isCertificacionesPage && !isJuegosPage">
         <a href="#inicio" class="nav-link" :class="{ active: isActive('inicio') }">Inicio</a>
         <a href="#sobre-mi" class="nav-link" :class="{ active: isActive('sobre-mi') }">Sobre Mí</a>
         <a href="#proyectos" class="nav-link" :class="{ active: isActive('proyectos') }">Proyectos</a>
@@ -18,9 +18,13 @@
           <IconComponent :name="isDark ? 'sun' : 'moon'" :size="20" />
         </button>
       </nav>
-      
-      <!-- Simplified nav for projects page -->
+
+      <!-- Simplified nav for other pages -->
       <nav class="nav-desktop" v-else>
+        <router-link to="/" class="nav-link">Inicio</router-link>
+        <router-link to="/proyectos" class="nav-link">Proyectos</router-link>
+        <router-link to="/certificaciones" class="nav-link">Certificaciones</router-link>
+        <router-link to="/juegos" class="nav-link">Juegos</router-link>
         <button @click="toggleTheme" class="theme-toggle" aria-label="Cambiar tema">
           <IconComponent :name="isDark ? 'sun' : 'moon'" :size="20" />
         </button>
@@ -49,11 +53,12 @@
           </button>
         </div>
         <div class="nav-mobile-links">
-          <a href="#inicio" @click="closeMobileMenu" class="nav-link">Inicio</a>
+          <a href="/" @click="closeMobileMenu" class="nav-link">Inicio</a>
+          <router-link to="/proyectos" @click="closeMobileMenu" class="nav-link">Todos los Proyectos</router-link>
+          <router-link to="/certificaciones" @click="closeMobileMenu" class="nav-link">Certificaciones</router-link>
+          <router-link to="/juegos" @click="closeMobileMenu" class="nav-link">Juegos</router-link>
           <a href="#sobre-mi" @click="closeMobileMenu" class="nav-link">Sobre Mí</a>
-          <a href="#proyectos" @click="closeMobileMenu" class="nav-link">Proyectos</a>
           <a href="#habilidades" @click="closeMobileMenu" class="nav-link">Habilidades</a>
-          <a href="#certificaciones" @click="closeMobileMenu" class="nav-link">Certificaciones</a>
           <a href="#servicios" @click="closeMobileMenu" class="nav-link">Servicios</a>
           <a href="#contacto" @click="closeMobileMenu" class="nav-link">Contacto</a>
         </div>
@@ -90,21 +95,23 @@ const activeSection = ref('inicio')
 
 const { y: scrollY } = useWindowScroll()
 
-// Check if we're on the projects page
+// Check if we're on special pages
 const isProjectsPage = computed(() => route.path === '/proyectos')
+const isCertificacionesPage = computed(() => route.path === '/certificaciones')
+const isJuegosPage = computed(() => route.path === '/juegos')
 
 const handleScroll = () => {
   isScrolled.value = scrollY.value > 50
-  
+
   // Only detect sections on home page
-  if (!isProjectsPage.value) {
+  if (!isProjectsPage.value && !isCertificacionesPage.value && !isJuegosPage.value) {
     detectActiveSection()
   }
 }
 const detectActiveSection = () => {
   const sections = ['inicio', 'sobre-mi', 'proyectos', 'habilidades', 'certificaciones', 'servicios', 'contacto']
   const offset = 100
-  
+
   for (const section of sections) {
     const element = document.getElementById(section)
     if (element) {
@@ -142,11 +149,11 @@ onMounted(() => {
     isDark.value = true
     document.documentElement.classList.add('dark-theme')
   }
-  
+
   window.addEventListener('scroll', handleScroll)
-  
+
   // Initial section detection
-  if (!isProjectsPage.value) {
+  if (!isProjectsPage.value && !isCertificacionesPage.value && !isJuegosPage.value) {
     detectActiveSection()
   }
 })
@@ -213,6 +220,7 @@ onUnmounted(() => {
   font-weight: 500;
   transition: all 0.3s ease;
   position: relative;
+  word-break: break-word;
 }
 
 .nav-link::after {
@@ -345,7 +353,7 @@ onUnmounted(() => {
   .nav-desktop {
     display: none;
   }
-  
+
   .mobile-menu-container {
     display: flex;
   }
