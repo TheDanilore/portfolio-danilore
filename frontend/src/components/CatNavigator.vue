@@ -1,7 +1,7 @@
 <template>
   <div class="cat-navigator" :class="{ 'cat-visible': isVisible }">
     <div class="cat-container" :style="catStyle" @click="handleCatClick">
-      <div class="cat" :class="[catState, { 'cat-jumping': isJumping, 'cat-dancing': isDancing, 'cat-shaking': isShaking, 'cat-walking': isWalking }]">
+      <div class="cat" :class="[catState, { 'cat-jumping': isJumping, 'cat-dancing': isDancing, 'cat-shaking': isShaking }]">
         <!-- Cabeza del gato -->
         <div class="cat-head">
           <!-- Orejas -->
@@ -75,7 +75,6 @@ const isJumping = ref(false)
 const isDancing = ref(false)
 const isHappy = ref(false)
 const isShaking = ref(false)
-const isWalking = ref(false)
 const showMessage = ref(false)
 const currentMessage = ref('')
 
@@ -218,9 +217,9 @@ const catMessages = [
   '¡Qué bonito día! ☀️',
   '¡Te quiero! ❤️',
   '¡Soy el mejor! 👑',
-  '¡Voy a pasear! 🚶',
-  '¡Explorando! 🗺️',
-  '¡Aventura! 🎪'
+  '¡Súper salto! 🦘',
+  '¡Fiesta! 🎉',
+  '¡Sorpresa! ✨'
 ]
 
 // Función para mostrar mensaje
@@ -269,78 +268,18 @@ const makeCatShake = () => {
   }, 800)
 }
 
-// Función para hacer que el gato camine por la pantalla (NUEVO)
-const makeCatWalk = () => {
-  isWalking.value = true
-  catState.value = 'full-visible'
-  isHappy.value = true
-  
-  // Obtener la posición actual
-  const currentPosition = catStyle.value.left || '20px'
-  const isLeft = currentPosition.includes('left')
-  
-  // Determinar posición de destino (opuesta)
-  const startPos = isLeft ? 'left' : 'right'
-  const endPos = isLeft ? 'right' : 'left'
-  
-  // Voltear el gato según la dirección
-  const scaleX = isLeft ? 1 : -1
-  
-  // Animar el gato caminando
-  const walkDuration = 8000 // 8 segundos caminando
-  const startTime = Date.now()
-  
-  const walkInterval = setInterval(() => {
-    const elapsed = Date.now() - startTime
-    const progress = Math.min(elapsed / walkDuration, 1)
-    
-    // Calcular posición
-    const position = progress * 100
-    
-    catStyle.value = {
-      ...catStyle.value,
-      [startPos]: `${position}%`,
-      transform: `scaleX(${scaleX})`
-    }
-    
-    if (progress >= 1) {
-      clearInterval(walkInterval)
-      isWalking.value = false
-      isHappy.value = false
-      
-      // Actualizar posición final
-      catStyle.value = {
-        [endPos]: '20px',
-        bottom: '0',
-        transform: 'scaleX(1)'
-      }
-    }
-  }, 50)
-  
-  // Mensaje durante la caminata
-  setTimeout(() => {
-    if (isWalking.value) {
-      showCatMessage()
-    }
-  }, 1000)
-}
-
 // Manejar clic en el gato (¡aquí está la magia! ✨)
 const handleCatClick = () => {
+  if (!isVisible.value) return
+  
   clickCount++
   isInteracting.value = true
   
-  // Cancelar cualquier timeout de ocultación
+  // Cancelar TODOS los timeouts anteriores
   if (hideTimeout) {
     clearTimeout(hideTimeout)
     hideTimeout = null
   }
-  
-  // Reiniciar timeout de interacción (el gato se queda 10 segundos después del último clic)
-  setTimeout(() => {
-    isInteracting.value = false
-    scheduleHide(10000) // 10 segundos después de interacción
-  }, 10000)
   
   // Diferentes comportamientos según el número de clics
   if (clickCount === 1) {
@@ -352,7 +291,7 @@ const handleCatClick = () => {
     
     setTimeout(() => {
       isHappy.value = false
-    }, 2000) // Más tiempo de sonrisa
+    }, 2000)
   } else if (clickCount === 2) {
     // Segundo clic: Saltar + Miau
     playMeowSound()
@@ -369,12 +308,18 @@ const handleCatClick = () => {
     makeCatShake()
     showCatMessage()
   } else if (clickCount === 5) {
-    // Quinto clic: Caminar por la pantalla + Miau
+    // Quinto clic: Salto especial + Miau
     playMeowSound()
-    makeCatWalk()
+    makeCatJump()
+    catState.value = 'full-visible'
+    isHappy.value = true
+    showCatMessage()
+    setTimeout(() => {
+      isHappy.value = false
+    }, 1500)
   } else {
-    // Más clics: Acción aleatoria (más variedad)
-    const randomAction = Math.floor(Math.random() * 6) // Aumentado a 6 opciones
+    // Más clics: Acción aleatoria (4 opciones)
+    const randomAction = Math.floor(Math.random() * 4)
     
     if (randomAction === 0) {
       playMeowSound()
@@ -385,33 +330,20 @@ const handleCatClick = () => {
     } else if (randomAction === 2) {
       playPurrSound()
       makeCatShake()
-    } else if (randomAction === 3) {
-      playMeowSound()
-      makeCatWalk()
-    } else if (randomAction === 4) {
-      // NUEVO: Miau enojado + Sacudida
+    } else {
+      // randomAction === 3
       playAngryMeowSound()
       makeCatShake()
-    } else {
-      playMeowSound()
-      catState.value = 'full-visible'
-      isHappy.value = true
-      setTimeout(() => {
-        isHappy.value = false
-      }, 1500)
     }
     
     showCatMessage()
   }
   
-  // Resetear la bandera de interacción después de 3 segundos
-  setTimeout(() => {
+  // Programar ocultación después de 5 segundos (CON clic)
+  hideTimeout = setTimeout(() => {
     isInteracting.value = false
-    // Solo ocultar si no está en estado full-visible
-    if (catState.value !== 'full-visible') {
-      scheduleHide()
-    }
-  }, 8000) // Más tiempo antes de ocultarse después de interactuar
+    hideCat()
+  }, 5000) // 5 segundos con clic
   
   // Resetear el contador después de 5 segundos sin clics
   setTimeout(() => {
@@ -420,11 +352,12 @@ const handleCatClick = () => {
 }
 
 // Programar ocultación del gato
-const scheduleHide = (duration = 3000) => {
+const scheduleHide = () => {
+  clearTimeout(hideTimeout)
   if (!isInteracting.value) {
     hideTimeout = setTimeout(() => {
       hideCat()
-    }, duration) // 3s sin clic, 10s con clic
+    }, 3000) // 3 segundos SIN clic
   }
 }
 
@@ -583,7 +516,7 @@ onUnmounted(() => {
     transform: translateY(-100%);
   }
   50% {
-    transform: translateY(-170%);
+    transform: translateY(-180%);
   }
 }
 
@@ -597,7 +530,7 @@ onUnmounted(() => {
     transform: translateY(-100%) rotate(-5deg);
   }
   50% {
-    transform: translateY(-110%) rotate(5deg);
+    transform: translateY(-112%) rotate(5deg);
   }
 }
 
@@ -608,37 +541,20 @@ onUnmounted(() => {
 
 @keyframes cat-shake {
   0%, 100% {
-    transform: translateY(-100%) translateX(-2px);
+    transform: translateY(-100%) translateX(-3px);
   }
   50% {
-    transform: translateY(-100%) translateX(2px);
-  }
-}
-
-/* Animación de caminar (NUEVA) */
-.cat-walking {
-  animation: cat-walk 0.8s ease-in-out infinite;
-}
-
-@keyframes cat-walk {
-  0%, 100% {
-    transform: translateY(-100%) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-102%) rotate(-2deg);
-  }
-  75% {
-    transform: translateY(-102%) rotate(2deg);
+    transform: translateY(-100%) translateX(3px);
   }
 }
 
 /* Cabeza del gato */
 .cat-head {
   position: relative;
-  width: 90px;
-  height: 85px;
+  width: 95px;
+  height: 90px;
   background: linear-gradient(145deg, #ffb347 0%, #ffa500 50%, #ff8c00 100%);
-  border-radius: 48% 48% 42% 42%;
+  border-radius: 50% 50% 45% 45%;
   box-shadow: 
     0 10px 30px rgba(0, 0, 0, 0.3),
     inset 0 -5px 15px rgba(255, 140, 0, 0.4),
@@ -658,11 +574,11 @@ onUnmounted(() => {
 /* Orejas */
 .ear {
   position: absolute;
-  width: 28px;
-  height: 38px;
+  width: 30px;
+  height: 40px;
   background: linear-gradient(145deg, #ffb347 0%, #ffa500 50%, #ff8c00 100%);
   border-radius: 85% 85% 0 0;
-  top: -15px;
+  top: -18px;
   box-shadow: 
     inset 0 -3px 8px rgba(255, 140, 0, 0.3),
     2px 2px 8px rgba(0, 0, 0, 0.2);
@@ -671,8 +587,8 @@ onUnmounted(() => {
 .ear::after {
   content: '';
   position: absolute;
-  width: 14px;
-  height: 22px;
+  width: 16px;
+  height: 24px;
   background: linear-gradient(145deg, #ffd699 0%, #ffcc80 100%);
   border-radius: 85% 85% 0 0;
   top: 6px;
@@ -682,12 +598,12 @@ onUnmounted(() => {
 }
 
 .ear-left {
-  left: 8px;
+  left: 10px;
   transform: rotate(-25deg);
 }
 
 .ear-right {
-  right: 8px;
+  right: 10px;
   transform: rotate(25deg);
 }
 
@@ -704,38 +620,38 @@ onUnmounted(() => {
 /* Ojos */
 .eye {
   position: absolute;
-  width: 14px;
-  height: 18px;
-  background: linear-gradient(145deg, #fff 0%, #f0f0f0 100%);
-  border-radius: 55% 55% 50% 50%;
-  top: 32%;
+  width: 16px;
+  height: 20px;
+  background: linear-gradient(145deg, #fff 0%, #f5f5f5 100%);
+  border-radius: 60% 60% 55% 55%;
+  top: 35%;
   animation: blink 4s infinite;
   transition: all 0.3s ease;
   box-shadow: 
     inset 0 2px 4px rgba(0, 0, 0, 0.1),
-    0 1px 2px rgba(255, 255, 255, 0.8);
+    0 2px 4px rgba(255, 255, 255, 0.8);
 }
 
 /* Ojos felices (forma de medialuna) */
 .eye-happy {
-  height: 9px;
+  height: 10px;
   border-radius: 50% 50% 0 0;
-  transform: translateY(4px);
+  transform: translateY(5px);
   animation: none;
 }
 
 .eye-left {
-  left: 22%;
+  left: 24%;
 }
 
 .eye-right {
-  right: 22%;
+  right: 24%;
 }
 
 .pupil {
   position: absolute;
-  width: 7px;
-  height: 9px;
+  width: 8px;
+  height: 10px;
   background: radial-gradient(circle at 30% 30%, #333 0%, #000 100%);
   border-radius: 50%;
   top: 50%;
@@ -748,12 +664,12 @@ onUnmounted(() => {
 .pupil::after {
   content: '';
   position: absolute;
-  width: 2px;
-  height: 2px;
+  width: 3px;
+  height: 3px;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
-  top: 20%;
-  left: 25%;
+  top: 25%;
+  left: 30%;
 }
 
 @keyframes blink {
@@ -925,11 +841,11 @@ onUnmounted(() => {
 /* Cuerpo del gato */
 .cat-body {
   position: absolute;
-  width: 75px;
-  height: 85px;
+  width: 80px;
+  height: 90px;
   background: linear-gradient(145deg, #ffb347 0%, #ffa500 50%, #ff8c00 100%);
-  border-radius: 42% 42% 35% 35%;
-  top: 80px;
+  border-radius: 45% 45% 38% 38%;
+  top: 85px;
   left: 50%;
   transform: translateX(-50%);
   box-shadow: 
@@ -940,8 +856,8 @@ onUnmounted(() => {
 
 .cat-belly {
   position: absolute;
-  width: 52px;
-  height: 65px;
+  width: 56px;
+  height: 70px;
   background: linear-gradient(145deg, #ffd699 0%, #ffcc80 50%, #ffb84d 100%);
   border-radius: 50%;
   top: 12px;
@@ -955,18 +871,18 @@ onUnmounted(() => {
 /* Patas del gato */
 .cat-legs {
   position: absolute;
-  top: 148px;
+  top: 158px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 22px;
+  gap: 24px;
 }
 
 .cat-leg {
-  width: 22px;
-  height: 42px;
+  width: 24px;
+  height: 44px;
   background: linear-gradient(145deg, #ffb347 0%, #ffa500 50%, #ff8c00 100%);
-  border-radius: 12px 12px 40% 40%;
+  border-radius: 12px 12px 45% 45%;
   box-shadow: 
     0 6px 18px rgba(0, 0, 0, 0.25),
     inset -2px 0 8px rgba(255, 140, 0, 0.3),
@@ -976,11 +892,11 @@ onUnmounted(() => {
 .cat-leg::after {
   content: '';
   position: absolute;
-  width: 24px;
-  height: 16px;
+  width: 26px;
+  height: 18px;
   background: linear-gradient(145deg, #ffd699 0%, #ffcc80 50%, #ffb84d 100%);
   border-radius: 50%;
-  bottom: -6px;
+  bottom: -7px;
   left: 50%;
   transform: translateX(-50%);
   box-shadow: 
@@ -991,11 +907,11 @@ onUnmounted(() => {
 .cat-leg::before {
   content: '';
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   background: rgba(255, 140, 0, 0.3);
   border-radius: 50%;
-  bottom: 2px;
+  bottom: 3px;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -1003,12 +919,12 @@ onUnmounted(() => {
 /* Cola del gato */
 .cat-tail {
   position: absolute;
-  width: 14px;
-  height: 85px;
+  width: 16px;
+  height: 90px;
   background: linear-gradient(145deg, #ffb347 0%, #ffa500 40%, #ff8c00 100%);
-  border-radius: 50% 50% 25px 25px;
-  top: 100px;
-  right: 18px;
+  border-radius: 50% 50% 28px 28px;
+  top: 105px;
+  right: 20px;
   transform-origin: top center;
   animation: tail-wag 1.2s ease-in-out infinite;
   box-shadow: 
@@ -1019,11 +935,11 @@ onUnmounted(() => {
 .cat-tail::after {
   content: '';
   position: absolute;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   background: linear-gradient(145deg, #ffcc80 0%, #ff8c00 100%);
   border-radius: 50%;
-  bottom: -2px;
+  bottom: -3px;
   left: 50%;
   transform: translateX(-50%);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
@@ -1031,10 +947,10 @@ onUnmounted(() => {
 
 @keyframes tail-wag {
   0%, 100% {
-    transform: rotate(-60deg);
+    transform: rotate(-65deg);
   }
   50% {
-    transform: rotate(-80deg);
+    transform: rotate(-85deg);
   }
 }
 
@@ -1086,38 +1002,76 @@ onUnmounted(() => {
 /* Responsive */
 @media (max-width: 768px) {
   .cat-head {
-    width: 70px;
-    height: 70px;
+    width: 75px;
+    height: 72px;
   }
   
   .ear {
-    width: 22px;
-    height: 28px;
+    width: 24px;
+    height: 32px;
+    top: -14px;
+  }
+  
+  .ear::after {
+    width: 13px;
+    height: 19px;
   }
   
   .cat-body {
-    width: 55px;
-    height: 65px;
-    top: 65px;
+    width: 62px;
+    height: 70px;
+    top: 68px;
+  }
+  
+  .cat-belly {
+    width: 44px;
+    height: 55px;
   }
   
   .cat-legs {
-    top: 115px;
+    top: 125px;
+    gap: 18px;
   }
   
   .cat-leg {
-    width: 16px;
-    height: 32px;
+    width: 18px;
+    height: 34px;
+  }
+  
+  .cat-leg::after {
+    width: 20px;
+    height: 14px;
   }
   
   .cat-tail {
-    height: 65px;
-    top: 75px;
+    width: 13px;
+    height: 70px;
+    top: 82px;
+  }
+  
+  .cat-tail::after {
+    width: 16px;
+    height: 16px;
   }
   
   .cat-paw {
-    width: 25px;
-    height: 12px;
+    width: 28px;
+    height: 14px;
+  }
+  
+  .cat-paw::after {
+    width: 19px;
+    height: 10px;
+  }
+  
+  .eye {
+    width: 13px;
+    height: 16px;
+  }
+  
+  .pupil {
+    width: 6px;
+    height: 8px;
   }
   
   .cat-message {
