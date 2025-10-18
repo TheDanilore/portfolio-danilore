@@ -50,7 +50,7 @@ onMounted(() => {
   --bg-color: #ffffff;
   --bg-secondary: #f9fafb;
   --border-color: #e5e7eb;
-  
+
   /* Fuentes */
   --font-primary: 'Poppins', sans-serif;
   --font-display: 'Montserrat', sans-serif;
@@ -77,7 +77,7 @@ onMounted(() => {
 }
 
 .dark-theme .mobile-menu-btn {
-    color: white;
+  color: white;
 }
 
 body {
@@ -113,6 +113,4 @@ body {
 .fade-leave-to {
   opacity: 0;
 }
-
-
 </style>

@@ -157,7 +157,7 @@ const closeGame = () => {
 
 /* Hero Section */
 .juegos-hero {
-  color: white;
+  color: var(--text-color);
   padding: 8rem 2rem 4rem;
   text-align: center;
 }

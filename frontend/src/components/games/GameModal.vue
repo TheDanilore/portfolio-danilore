@@ -4,7 +4,7 @@
       <div v-if="isOpen" class="game-modal" @click="closeModal">
         <div class="modal-container" @click.stop>
           <button class="modal-close-btn" @click="closeModal" title="Cerrar (ESC)">
-            <IconComponent name="x" />
+            <IconComponent name="x-exit" />
           </button>
           
           <div class="modal-content">

@@ -14,12 +14,8 @@
     <section class="proyectos-filters">
       <div class="container">
         <div class="filter-buttons">
-          <button
-            v-for="filter in filters"
-            :key="filter.value"
-            :class="['filter-btn', { active: activeFilter === filter.value }]"
-            @click="activeFilter = filter.value"
-          >
+          <button v-for="filter in filters" :key="filter.value"
+            :class="['filter-btn', { active: activeFilter === filter.value }]" @click="activeFilter = filter.value">
             {{ filter.label }}
           </button>
         </div>
@@ -35,31 +31,14 @@
               <img :src="project.image" :alt="project.title" />
               <div class="project-overlay">
                 <div class="project-links">
-                  <a
-                    v-if="project.demo"
-                    :href="project.demo"
-                    target="_blank"
-                    class="project-link"
-                    title="Ver Demo"
-                  >
+                  <a v-if="project.demo" :href="project.demo" target="_blank" class="project-link" title="Ver Demo">
                     <IconComponent name="eye" :size="20" />
                   </a>
-                  <a
-                    v-if="project.github"
-                    :href="project.github"
-                    target="_blank"
-                    class="project-link"
-                    title="Ver Código"
-                  >
+                  <a v-if="project.github" :href="project.github" target="_blank" class="project-link"
+                    title="Ver Código">
                     <IconComponent name="github" :size="20" />
                   </a>
-                  <a
-                    v-if="project.video"
-                    :href="project.video"
-                    target="_blank"
-                    class="project-link"
-                    title="Ver Video"
-                  >
+                  <a v-if="project.video" :href="project.video" target="_blank" class="project-link" title="Ver Video">
                     <IconComponent name="youtube" :size="20" />
                   </a>
                 </div>
@@ -242,7 +221,7 @@ const filteredProjects = computed(() => {
 
 /* Hero Section */
 .proyectos-hero {
-  color: white;
+  color: var(--text-color);
   padding: 8rem 2rem 4rem;
   text-align: center;
 }

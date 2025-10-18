@@ -51,7 +51,7 @@ const skills = [
 
 <style scoped>
 .skills {
-  background: var(--bg-color);
+    background: var(--bg-secondary);
 }
 
 .section-padding {

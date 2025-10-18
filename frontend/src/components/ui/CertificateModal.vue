@@ -1,74 +1,64 @@
 <template>
-  <Transition name="modal">
-    <div v-if="isOpen" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-container">
-        <!-- Header del modal -->
-        <div class="modal-header">
-          <div class="modal-title">
-            <h3>{{ certificate.title }}</h3>
-            <p class="modal-institution">{{ certificate.institution }}</p>
-          </div>
-          <button @click="closeModal" class="btn-close" aria-label="Cerrar">
-            <IconComponent name="close" :size="24" />
+  <Teleport to="body">
+    <Transition name="modal">
+      <div v-if="isOpen && certificate" class="cert-modal" @click="closeModal">
+        <div class="modal-content" @click.stop>
+          <button class="modal-close" @click="closeModal">
+            <IconComponent name="x-exit" />
           </button>
-        </div>
-
-        <!-- Controles del visor -->
-        <div class="viewer-controls">
-          <button @click="toggleFullscreen" class="control-btn" title="Pantalla completa">
-            <IconComponent :name="isFullscreen ? 'minimize' : 'maximize'" :size="20" />
-          </button>
-          <a 
-            :href="certificate.file" 
-            :download="getFileName(certificate)" 
-            class="control-btn btn-download"
-            title="Descargar certificado"
-          >
-            <IconComponent name="download" :size="20" />
-            <span>Descargar</span>
-          </a>
-        </div>
-
-        <!-- Visor del certificado -->
-        <div class="viewer-container" ref="viewerContainer">
-          <div class="viewer-content" :style="{ transform: `scale(${zoom})` }">
-            <!-- Para PDFs -->
-            <iframe 
-              v-if="isPDF"
-              :src="certificate.file" 
-              class="certificate-viewer"
-              frameborder="0"
-            ></iframe>
-            
-            <!-- Para imágenes -->
-            <img 
-              v-else
-              :src="certificate.file" 
-              :alt="certificate.title"
-              class="certificate-viewer"
-            />
-          </div>
-        </div>
-
-        <!-- Footer con info adicional -->
-        <div class="modal-footer" v-if="certificate.date || certificate.credentialId">
-          <div v-if="certificate.date" class="footer-item">
-            <IconComponent name="calendar" :size="16" />
-            <span>{{ certificate.date }}</span>
-          </div>
-          <div v-if="certificate.credentialId" class="footer-item">
-            <IconComponent name="award" :size="16" />
-            <span>ID: {{ certificate.credentialId }}</span>
+          <div class="modal-scroll-container">
+            <div class="modal-image">
+              <img :src="certificate.image" :alt="certificate.title" loading="lazy" />
+            </div>
+            <div class="modal-info">
+              <div class="cert-category">{{ certificate.categoryLabel || getCategoryLabel(certificate) }}</div>
+              <h2 class="modal-title">{{ certificate.title }}</h2>
+              <p class="modal-institution">
+                <IconComponent name="building" />
+                {{ certificate.institution }}
+              </p>
+              <p class="modal-date">
+                <IconComponent name="calendar" />
+                {{ certificate.date }}
+              </p>
+              <p v-if="certificate.description" class="modal-description">{{ certificate.description }}</p>
+              <p v-if="certificate.credentialId" class="modal-credential">
+                <IconComponent name="key" />
+                <strong>ID:</strong> {{ certificate.credentialId }}
+              </p>
+              <div class="modal-actions">
+                <a
+                  v-if="certificate.pdf"
+                  :href="certificate.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="modal-pdf-btn"
+                >
+                  <IconComponent name="file-text" />
+                  Ver PDF Completo
+                </a>
+                <a
+                  v-if="certificate.verificationUrl"
+                  :href="certificate.verificationUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="modal-verify-btn"
+                >
+                  <IconComponent name="external-link" />
+                  Verificar Certificación
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </Transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import IconComponent from '../icons/IconComponents.vue'
+import { watch } from 'vue'
+import IconComponent from '@/components/icons/IconComponents.vue'
 
 const props = defineProps({
   isOpen: {
@@ -77,236 +67,264 @@ const props = defineProps({
   },
   certificate: {
     type: Object,
-    required: true
+    default: null
   }
 })
 
 const emit = defineEmits(['close'])
 
-const zoom = ref(1)
-const isFullscreen = ref(false)
-const viewerContainer = ref(null)
-
-const isPDF = computed(() => {
-  return props.certificate.file?.toLowerCase().endsWith('.pdf')
-})
-
 const closeModal = () => {
-  if (document.fullscreenElement) {
-    document.exitFullscreen()
-  }
   emit('close')
 }
 
-
-const toggleFullscreen = async () => {
-  if (!document.fullscreenElement) {
-    await viewerContainer.value?.requestFullscreen()
-    isFullscreen.value = true
-  } else {
-    await document.exitFullscreen()
-    isFullscreen.value = false
+const getCategoryLabel = (cert) => {
+  // Fallback para certificados que no tienen categoryLabel
+  if (cert.categoryLabel) return cert.categoryLabel
+  
+  const categoryMap = {
+    'programming': 'Programación',
+    'data-science': 'Data Science',
+    'networking': 'Redes',
+    'office': 'Office',
+    'soft-skills': 'Habilidades Blandas',
+    'backend': 'Backend',
+    'frontend': 'Frontend',
+    'cloud': 'Cloud',
+    'database': 'Bases de Datos'
   }
+  
+  return categoryMap[cert.category] || 'Certificación'
 }
 
-const getFileName = (cert) => {
-  const cleanTitle = cert.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()
-  const extension = cert.file?.split('.').pop() || 'pdf'
-  return `certificado_${cleanTitle}.${extension}`
-}
-
-// Resetear zoom al cambiar de certificado
-watch(() => props.certificate, () => {
-  zoom.value = 1
-})
-
-// Cerrar con ESC
-watch(() => props.isOpen, (newVal) => {
-  if (newVal) {
-    document.addEventListener('keydown', handleEscape)
+// Controlar scroll del body
+watch(() => props.isOpen, (newValue) => {
+  if (newValue) {
+    document.body.style.overflow = 'hidden'
   } else {
-    document.removeEventListener('keydown', handleEscape)
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
-    }
+    document.body.style.overflow = ''
   }
 })
 
-const handleEscape = (e) => {
-  if (e.key === 'Escape' && !document.fullscreenElement) {
+// Manejar tecla ESC
+const handleEsc = (event) => {
+  if (event.key === 'Escape' && props.isOpen) {
     closeModal()
   }
+}
+
+// Agregar listener cuando el componente se monta
+if (typeof window !== 'undefined') {
+  window.addEventListener('keydown', handleEsc)
 }
 </script>
 
 <style scoped>
-.modal-overlay {
+/* Modal */
+.cert-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  padding: 1rem;
+  z-index: 10000;
+  padding: 2rem;
 }
 
-.modal-container {
+.modal-content {
   background: var(--bg-color);
   border-radius: 20px;
+  max-width: 900px;
   width: 100%;
-  max-width: 1200px;
   max-height: 90vh;
+  position: relative;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
 }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-secondary);
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-.modal-title h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-color);
-  margin: 0 0 0.25rem 0;
-}
-
-.modal-institution {
-  font-size: 0.95rem;
-  color: var(--text-light);
-  margin: 0;
-}
-
-.btn-close {
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   width: 40px;
   height: 40px;
+  background: rgba(0, 0, 0, 0.7);
   border: none;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-color);
-  cursor: pointer;
+  z-index: 10;
   transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: rotate(90deg) scale(1.1);
+}
+
+.modal-scroll-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 90vh;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(102, 126, 234, 0.5) rgba(0, 0, 0, 0.1);
+}
+
+.modal-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+}
+
+.modal-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.modal-image {
+  width: 100%;
+  max-height: 400px;
+  overflow: hidden;
   flex-shrink: 0;
 }
 
-.btn-close:hover {
-  background: rgba(255, 0, 0, 0.2);
-}
-
-.viewer-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 2rem;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
-  flex-wrap: wrap;
-}
-
-.control-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border-color);
-  background: var(--bg-color);
-  color: var(--text-color);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.control-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-color: transparent;
-  transform: translateY(-2px);
-}
-
-.control-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-download {
-  margin-left: auto;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-}
-
-.btn-download:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.viewer-content {
-  transition: transform 0.3s ease;
-  transform-origin: center;
+.modal-image img {
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  object-fit: cover;
 }
 
-.certificate-viewer {
-    width: 100%;
-    height: 50vh;
-    /* border: none; */
-    /* border-radius: 10px; */
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    background: white;
+.modal-info {
+  padding: 2rem;
 }
 
-.modal-footer {
-  display: flex;
-  gap: 2rem;
-  padding: 1rem 2rem;
-  background: var(--bg-secondary);
-  border-top: 1px solid var(--border-color);
+.modal-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  font-family: var(--font-display);
 }
 
-.footer-item {
+.cert-category {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.modal-institution,
+.modal-date {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   color: var(--text-light);
-  font-size: 0.9rem;
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
 }
 
-/* Fullscreen styles */
-.viewer-container:fullscreen {
-  padding: 0;
-  background: #000;
+.modal-description {
+  color: var(--text-light);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
 }
 
-.viewer-container:fullscreen .certificate-viewer {
-  height: 100vh;
-  border-radius: 0;
+.modal-credential {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  padding: 0.8rem 1rem;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  word-break: break-all;
+}
+
+.modal-credential strong {
+  color: var(--text-color);
+  flex-shrink: 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.modal-pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.modal-pdf-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(240, 147, 251, 0.4);
+}
+
+.modal-verify-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.modal-verify-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
 }
 
 /* Transitions */
 .modal-enter-active,
 .modal-leave-active {
-  transition: all 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .modal-enter-from,
@@ -314,57 +332,40 @@ const handleEscape = (e) => {
   opacity: 0;
 }
 
-.modal-enter-from .modal-container,
-.modal-leave-to .modal-container {
-  transform: scale(0.9);
-}
-
 /* Responsive */
 @media (max-width: 768px) {
-  .modal-container {
+  .cert-modal {
+    padding: 1rem;
+  }
+
+  .modal-content {
     max-height: 95vh;
   }
 
-  .modal-header {
-    padding: 1rem;
+  .modal-scroll-container {
+    max-height: 95vh;
   }
 
-  .modal-title h3 {
-    font-size: 1.1rem;
+  .modal-image {
+    max-height: 250px;
   }
 
-  .viewer-controls {
-    padding: 0.75rem;
-    gap: 0.5rem;
+  .modal-info {
+    padding: 1.5rem;
   }
 
-  .control-btn span {
-    display: none;
+  .modal-title {
+    font-size: 1.5rem;
   }
 
-  .control-btn {
-    padding: 0.5rem;
-    min-width: 40px;
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-pdf-btn,
+  .modal-verify-btn {
+    width: 100%;
     justify-content: center;
   }
-
-  .certificate-viewer {
-    height: 50vh;
-  }
-
-  .modal-footer {
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem;
-  }
-}
-
-/* Dark theme adjustments */
-:global(.dark-theme) .viewer-container {
-  background: #1a1a1a;
-}
-
-:global(.dark-theme) .certificate-viewer {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 </style>
