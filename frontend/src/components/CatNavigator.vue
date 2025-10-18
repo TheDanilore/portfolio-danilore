@@ -1,7 +1,7 @@
 <template>
   <div class="cat-navigator" :class="{ 'cat-visible': isVisible }">
     <div class="cat-container" :style="catStyle" @click="handleCatClick">
-      <div class="cat" :class="[catState, { 'cat-jumping': isJumping, 'cat-dancing': isDancing, 'cat-shaking': isShaking }]">
+      <div class="cat" :class="[catState, { 'cat-jumping': isJumping, 'cat-dancing': isDancing, 'cat-shaking': isShaking, 'cat-walking': isWalking }]">
         <!-- Cabeza del gato -->
         <div class="cat-head">
           <!-- Orejas -->
@@ -75,6 +75,7 @@ const isJumping = ref(false)
 const isDancing = ref(false)
 const isHappy = ref(false)
 const isShaking = ref(false)
+const isWalking = ref(false)
 const showMessage = ref(false)
 const currentMessage = ref('')
 
@@ -89,76 +90,115 @@ let isInteracting = ref(false) // Nueva bandera para saber si el usuario está i
 // Puedes cambiar estos valores para modificar los sonidos:
 
 // Sonido MIAU - Configuración
-const MEOW_CONFIG = {
-  type: 'sine', // Tipo de onda: 'sine', 'square', 'sawtooth', 'triangle'
-  startFreq: 400, // Frecuencia inicial (Hz) - más alto = más agudo
-  peakFreq: 700,  // Frecuencia pico (Hz) - 600-800 suena más realista
-  endFreq: 250,   // Frecuencia final (Hz) - más bajo = más grave
-  duration: 0.4,  // Duración total (segundos)
-  volume: 0.4     // Volumen (0.0 a 1.0)
-}
+// const MEOW_CONFIG = {
+//   type: 'sine', // Tipo de onda: 'sine', 'square', 'sawtooth', 'triangle'
+//   startFreq: 400, // Frecuencia inicial (Hz) - más alto = más agudo
+//   peakFreq: 700,  // Frecuencia pico (Hz) - 600-800 suena más realista
+//   endFreq: 250,   // Frecuencia final (Hz) - más bajo = más grave
+//   duration: 0.4,  // Duración total (segundos)
+//   volume: 0.4     // Volumen (0.0 a 1.0)
+// }
 
 // Sonido RONRONEO - Configuración
-const PURR_CONFIG = {
-  type: 'sawtooth', // 'sawtooth' da efecto más vibrante
-  baseFreq: 60,     // Frecuencia base (Hz) - 60-90 suena natural
-  duration: 1.5,    // Duración total (segundos)
-  pulses: 15,       // Número de vibraciones - más = más realista
-  volume: 0.2       // Volumen (0.0 a 1.0)
-}
+// const PURR_CONFIG = {
+//   type: 'square', // 'sawtooth' da efecto más vibrante
+//   baseFreq: 100,     // Frecuencia base (Hz) - 60-90 suena natural
+//   duration: 1.5,    // Duración total (segundos)
+//   pulses: 15,       // Número de vibraciones - más = más realista
+//   volume: 0.4       // Volumen (0.0 a 1.0)
+// }
 
 // Función para reproducir MIAU
+// const playMeowSound = () => {
+//   const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+//   const oscillator = audioContext.createOscillator()
+//   const gainNode = audioContext.createGain()
+  
+//   oscillator.connect(gainNode)
+//   gainNode.connect(audioContext.destination)
+  
+//   // Aplicar configuración personalizada
+//   oscillator.type = MEOW_CONFIG.type
+//   oscillator.frequency.setValueAtTime(MEOW_CONFIG.startFreq, audioContext.currentTime)
+//   oscillator.frequency.exponentialRampToValueAtTime(MEOW_CONFIG.peakFreq, audioContext.currentTime + MEOW_CONFIG.duration * 0.25)
+//   oscillator.frequency.exponentialRampToValueAtTime(MEOW_CONFIG.endFreq, audioContext.currentTime + MEOW_CONFIG.duration)
+  
+//   // Envelope de volumen (fade in/out más natural)
+//   gainNode.gain.setValueAtTime(0, audioContext.currentTime)
+//   gainNode.gain.linearRampToValueAtTime(MEOW_CONFIG.volume, audioContext.currentTime + 0.05)
+//   gainNode.gain.linearRampToValueAtTime(MEOW_CONFIG.volume * 0.7, audioContext.currentTime + MEOW_CONFIG.duration * 0.5)
+//   gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + MEOW_CONFIG.duration)
+  
+//   oscillator.start(audioContext.currentTime)
+//   oscillator.stop(audioContext.currentTime + MEOW_CONFIG.duration)
+// }
 const playMeowSound = () => {
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-  const oscillator = audioContext.createOscillator()
-  const gainNode = audioContext.createGain()
-  
-  oscillator.connect(gainNode)
-  gainNode.connect(audioContext.destination)
-  
-  // Aplicar configuración personalizada
-  oscillator.type = MEOW_CONFIG.type
-  oscillator.frequency.setValueAtTime(MEOW_CONFIG.startFreq, audioContext.currentTime)
-  oscillator.frequency.exponentialRampToValueAtTime(MEOW_CONFIG.peakFreq, audioContext.currentTime + MEOW_CONFIG.duration * 0.25)
-  oscillator.frequency.exponentialRampToValueAtTime(MEOW_CONFIG.endFreq, audioContext.currentTime + MEOW_CONFIG.duration)
-  
-  // Envelope de volumen (fade in/out más natural)
-  gainNode.gain.setValueAtTime(0, audioContext.currentTime)
-  gainNode.gain.linearRampToValueAtTime(MEOW_CONFIG.volume, audioContext.currentTime + 0.05)
-  gainNode.gain.linearRampToValueAtTime(MEOW_CONFIG.volume * 0.7, audioContext.currentTime + MEOW_CONFIG.duration * 0.5)
-  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + MEOW_CONFIG.duration)
-  
-  oscillator.start(audioContext.currentTime)
-  oscillator.stop(audioContext.currentTime + MEOW_CONFIG.duration)
+  try {
+    const audio = new Audio('/sounds/meow.mp3')
+    audio.volume = 0.5
+    audio.play().catch(err => {
+      console.error('❌ Error reproduciendo meow:', err)
+      console.log('Verifica que el archivo esté en: frontend/public/sounds/meow.mp3')
+    })
+  } catch (error) {
+    console.error('❌ Error creando audio:', error)
+  }
 }
 
+
 // Función para reproducir RONRONEO
+// const playPurrSound = () => {
+//   const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+//   const oscillator = audioContext.createOscillator()
+//   const gainNode = audioContext.createGain()
+  
+//   oscillator.connect(gainNode)
+//   gainNode.connect(audioContext.destination)
+  
+//   // Aplicar configuración personalizada
+//   oscillator.type = PURR_CONFIG.type
+//   oscillator.frequency.setValueAtTime(PURR_CONFIG.baseFreq, audioContext.currentTime)
+  
+//   // Modulación para efecto de ronroneo (vibraciones)
+//   const pulseInterval = PURR_CONFIG.duration / PURR_CONFIG.pulses
+//   gainNode.gain.setValueAtTime(PURR_CONFIG.volume * 0.3, audioContext.currentTime)
+  
+//   for (let i = 0; i < PURR_CONFIG.pulses; i++) {
+//     const time = audioContext.currentTime + (i * pulseInterval)
+//     gainNode.gain.linearRampToValueAtTime(PURR_CONFIG.volume * 0.6, time)
+//     gainNode.gain.linearRampToValueAtTime(PURR_CONFIG.volume * 0.3, time + pulseInterval * 0.5)
+//   }
+  
+//   gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + PURR_CONFIG.duration)
+  
+//   oscillator.start(audioContext.currentTime)
+//   oscillator.stop(audioContext.currentTime + PURR_CONFIG.duration)
+// }
 const playPurrSound = () => {
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-  const oscillator = audioContext.createOscillator()
-  const gainNode = audioContext.createGain()
-  
-  oscillator.connect(gainNode)
-  gainNode.connect(audioContext.destination)
-  
-  // Aplicar configuración personalizada
-  oscillator.type = PURR_CONFIG.type
-  oscillator.frequency.setValueAtTime(PURR_CONFIG.baseFreq, audioContext.currentTime)
-  
-  // Modulación para efecto de ronroneo (vibraciones)
-  const pulseInterval = PURR_CONFIG.duration / PURR_CONFIG.pulses
-  gainNode.gain.setValueAtTime(PURR_CONFIG.volume * 0.3, audioContext.currentTime)
-  
-  for (let i = 0; i < PURR_CONFIG.pulses; i++) {
-    const time = audioContext.currentTime + (i * pulseInterval)
-    gainNode.gain.linearRampToValueAtTime(PURR_CONFIG.volume * 0.6, time)
-    gainNode.gain.linearRampToValueAtTime(PURR_CONFIG.volume * 0.3, time + pulseInterval * 0.5)
+  try {
+    const audio = new Audio('/sounds/purr.mp3')
+    audio.volume = 0.9
+    audio.play().catch(err => {
+      console.error('❌ Error reproduciendo purr:', err)
+      console.log('Verifica que el archivo esté en: frontend/public/sounds/purr.mp3')
+    })
+  } catch (error) {
+    console.error('❌ Error creando audio:', error)
   }
-  
-  gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + PURR_CONFIG.duration)
-  
-  oscillator.start(audioContext.currentTime)
-  oscillator.stop(audioContext.currentTime + PURR_CONFIG.duration)
+}
+
+// Función para reproducir MIAU ENOJADO (NUEVO)
+const playAngryMeowSound = () => {
+  try {
+    const audio = new Audio('/sounds/meow-angry.mp3')
+    audio.volume = 0.5
+    audio.play().catch(err => {
+      console.error('❌ Error reproduciendo meow-angry:', err)
+      console.log('Verifica que el archivo esté en: frontend/public/sounds/meow-angry.mp3')
+    })
+  } catch (error) {
+    console.error('❌ Error creando audio:', error)
+  }
 }
 
 // Mensajes aleatorios del gato (más variedad y personalidad)
@@ -177,7 +217,10 @@ const catMessages = [
   '¡Juguemos! 🎮',
   '¡Qué bonito día! ☀️',
   '¡Te quiero! ❤️',
-  '¡Soy el mejor! 👑'
+  '¡Soy el mejor! 👑',
+  '¡Voy a pasear! 🚶',
+  '¡Explorando! 🗺️',
+  '¡Aventura! 🎪'
 ]
 
 // Función para mostrar mensaje
@@ -226,6 +269,62 @@ const makeCatShake = () => {
   }, 800)
 }
 
+// Función para hacer que el gato camine por la pantalla (NUEVO)
+const makeCatWalk = () => {
+  isWalking.value = true
+  catState.value = 'full-visible'
+  isHappy.value = true
+  
+  // Obtener la posición actual
+  const currentPosition = catStyle.value.left || '20px'
+  const isLeft = currentPosition.includes('left')
+  
+  // Determinar posición de destino (opuesta)
+  const startPos = isLeft ? 'left' : 'right'
+  const endPos = isLeft ? 'right' : 'left'
+  
+  // Voltear el gato según la dirección
+  const scaleX = isLeft ? 1 : -1
+  
+  // Animar el gato caminando
+  const walkDuration = 8000 // 8 segundos caminando
+  const startTime = Date.now()
+  
+  const walkInterval = setInterval(() => {
+    const elapsed = Date.now() - startTime
+    const progress = Math.min(elapsed / walkDuration, 1)
+    
+    // Calcular posición
+    const position = progress * 100
+    
+    catStyle.value = {
+      ...catStyle.value,
+      [startPos]: `${position}%`,
+      transform: `scaleX(${scaleX})`
+    }
+    
+    if (progress >= 1) {
+      clearInterval(walkInterval)
+      isWalking.value = false
+      isHappy.value = false
+      
+      // Actualizar posición final
+      catStyle.value = {
+        [endPos]: '20px',
+        bottom: '0',
+        transform: 'scaleX(1)'
+      }
+    }
+  }, 50)
+  
+  // Mensaje durante la caminata
+  setTimeout(() => {
+    if (isWalking.value) {
+      showCatMessage()
+    }
+  }, 1000)
+}
+
 // Manejar clic en el gato (¡aquí está la magia! ✨)
 const handleCatClick = () => {
   clickCount++
@@ -263,9 +362,13 @@ const handleCatClick = () => {
     playPurrSound()
     makeCatShake()
     showCatMessage()
+  } else if (clickCount === 5) {
+    // Quinto clic: Caminar por la pantalla + Miau
+    playMeowSound()
+    makeCatWalk()
   } else {
     // Más clics: Acción aleatoria (más variedad)
-    const randomAction = Math.floor(Math.random() * 4)
+    const randomAction = Math.floor(Math.random() * 6) // Aumentado a 6 opciones
     
     if (randomAction === 0) {
       playMeowSound()
@@ -275,6 +378,13 @@ const handleCatClick = () => {
       makeCatDance()
     } else if (randomAction === 2) {
       playPurrSound()
+      makeCatShake()
+    } else if (randomAction === 3) {
+      playMeowSound()
+      makeCatWalk()
+    } else if (randomAction === 4) {
+      // NUEVO: Miau enojado + Sacudida
+      playAngryMeowSound()
       makeCatShake()
     } else {
       playMeowSound()
@@ -446,15 +556,15 @@ onUnmounted(() => {
 }
 
 .cat.peeking {
-  transform: translateY(-20%);
+  transform: translateY(-30%);
 }
 
 .cat.visible {
-  transform: translateY(-50%);
+  transform: translateY(-60%);
 }
 
 .cat.full-visible {
-  transform: translateY(-80%);
+  transform: translateY(-200%); /* Aumentado para que se vea completamente */
 }
 
 /* Animación de salto */
@@ -464,10 +574,10 @@ onUnmounted(() => {
 
 @keyframes cat-jump {
   0%, 100% {
-    transform: translateY(-80%);
+    transform: translateY(-100%);
   }
   50% {
-    transform: translateY(-150%);
+    transform: translateY(-170%);
   }
 }
 
@@ -478,10 +588,10 @@ onUnmounted(() => {
 
 @keyframes cat-dance {
   0%, 100% {
-    transform: translateY(-80%) rotate(-5deg);
+    transform: translateY(-100%) rotate(-5deg);
   }
   50% {
-    transform: translateY(-90%) rotate(5deg);
+    transform: translateY(-110%) rotate(5deg);
   }
 }
 
@@ -492,10 +602,27 @@ onUnmounted(() => {
 
 @keyframes cat-shake {
   0%, 100% {
-    transform: translateY(-80%) translateX(-2px);
+    transform: translateY(-100%) translateX(-2px);
   }
   50% {
-    transform: translateY(-80%) translateX(2px);
+    transform: translateY(-100%) translateX(2px);
+  }
+}
+
+/* Animación de caminar (NUEVA) */
+.cat-walking {
+  animation: cat-walk 0.8s ease-in-out infinite;
+}
+
+@keyframes cat-walk {
+  0%, 100% {
+    transform: translateY(-100%) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-102%) rotate(-2deg);
+  }
+  75% {
+    transform: translateY(-102%) rotate(2deg);
   }
 }
 
@@ -806,18 +933,18 @@ onUnmounted(() => {
   height: 80px;
   background: linear-gradient(135deg, #ffa500 0%, #ff8c00 100%);
   border-radius: 20px;
-  top: 100px;
-  right: -20px;
+  top: 110px;
+  right: 20px;
   transform-origin: top;
   animation: tail-wag 1s ease-in-out infinite;
 }
 
 @keyframes tail-wag {
   0%, 100% {
-    transform: rotate(-10deg);
+    transform: rotate(300deg);
   }
   50% {
-    transform: rotate(10deg);
+    transform: rotate(100deg);
   }
 }
 
