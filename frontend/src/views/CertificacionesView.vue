@@ -969,13 +969,13 @@ const certificaciones = [
         id: 69,
         title: 'Certificado en E-Commerce',
         institution: 'Fundación Telefónica - Perú',
-        date: 'Octubre 2023',
+        date: 'Noviembre 2024',
         category: 'e-commerce',
         categoryLabel: 'E-Commerce',
         description: 'Certificado en E-Commerce, otorgado por la Fundación Telefónica - Perú. Esta certificación avala mis conocimientos y habilidades en la gestión de negocios en línea.',
         image: '/assets/docs/certificates/fundacion-telefonica/FT PE - Certificado - E-Commerce .jpg',
         pdf: '/assets/docs/certificates/fundacion-telefonica/FT PE - Certificado - E-Commerce .pdf',
-        credentialId: 'SIST001-0585-2023',
+        credentialId: 'c9c248fa-c543-4d74-9fcb-4f93f74df0a0',
         type: 'course'
     }
 ]
