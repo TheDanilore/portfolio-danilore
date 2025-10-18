@@ -95,7 +95,53 @@
                         </div>
                     </div>
 
-                    <!-- Placeholder Game 3 -->
+                    <!-- Breakout Game -->
+                    <div class="game-card" @click="openGame('breakout')">
+                        <div class="game-preview">
+                            <div class="breakout-preview">
+                                <div class="breakout-container">
+                                    <div class="breakout-blocks">
+                                        <div class="breakout-block" style="background: #f00000;"></div>
+                                        <div class="breakout-block" style="background: #f0a000;"></div>
+                                        <div class="breakout-block" style="background: #f0f000;"></div>
+                                        <div class="breakout-block" style="background: #00f000;"></div>
+                                        <div class="breakout-block" style="background: #0000f0;"></div>
+                                    </div>
+                                    <div class="breakout-ball"></div>
+                                    <div class="breakout-paddle"></div>
+                                </div>
+                            </div>
+                            <div class="play-overlay">
+                                <IconComponent name="arrow-right" :size="48" color="white" />
+                            </div>
+                        </div>
+                        <div class="game-content">
+                            <h3 class="game-title">Breakout</h3>
+                            <p class="game-description">
+                                Destruye bloques con la pelota. ¡Recoge power-ups especiales!
+                            </p>
+                            <div class="game-tech">
+                                <span class="tech-tag">Vue.js 3</span>
+                                <span class="tech-tag">Canvas API</span>
+                            </div>
+                            <div class="game-features">
+                                <div class="feature">
+                                    <IconComponent name="arrow-left" :size="16" />
+                                    <span>Power-ups únicos</span>
+                                </div>
+                                <div class="feature">
+                                    <IconComponent name="arrow-up" :size="16" />
+                                    <span>Múltiples niveles</span>
+                                </div>
+                                <div class="feature">
+                                    <IconComponent name="download" :size="16" />
+                                    <span>Sistema de vidas</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder Game 4 -->
                     <div class="game-card coming-soon">
                         <div class="game-preview">
                             <div class="coming-soon-preview">
@@ -114,26 +160,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Placeholder Game 4 -->
-                    <div class="game-card coming-soon">
-                        <div class="game-preview">
-                            <div class="coming-soon-preview">
-                                <IconComponent name="code" />
-                                <span>Próximamente</span>
-                            </div>
-                        </div>
-                        <div class="game-content">
-                            <h3 class="game-title">Pong</h3>
-                            <p class="game-description">
-                                El clásico juego de ping-pong arcade. ¡Derrota a la IA!
-                            </p>
-                            <div class="game-tech">
-                                <span class="tech-tag">Vue.js 3</span>
-                                <span class="tech-tag">Canvas API</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
@@ -142,6 +168,7 @@
         <GameModal :is-open="isGameModalOpen" @close="closeGame">
             <SnakeGame v-if="currentGame === 'snake'" />
             <TetrisGame v-if="currentGame === 'tetris'" />
+            <BreakoutGame v-if="currentGame === 'breakout'" />
         </GameModal>
 
         <FooterSection />
@@ -158,6 +185,7 @@ import IconComponent from '@/components/icons/IconComponents.vue'
 import GameModal from '@/components/games/GameModal.vue'
 import SnakeGame from '@/components/games/SnakeGame.vue'
 import TetrisGame from '@/components/games/TetrisGame.vue'
+import BreakoutGame from '@/components/games/BreakoutGame.vue'
 
 const isGameModalOpen = ref(false)
 const currentGame = ref(null)
@@ -345,15 +373,108 @@ const closeGame = () => {
 
 .tetris-blocks {
     display: grid;
-    grid-template-columns: repeat(4, 40px);
-    grid-template-rows: repeat(4, 40px);
+    grid-template-columns: repeat(4, 30px);
+    grid-template-rows: repeat(4, 30px);
     gap: 4px;
-    animation: tetrisPulse 2s infinite;
 }
 
 .tetris-block {
-    border-radius: 4px;
+    border-radius: 3px;
     box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    animation: tetrisPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes tetrisPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
+
+.breakout-preview {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.breakout-container {
+    position: relative;
+    width: 160px;
+    height: 200px;
+}
+
+.breakout-blocks {
+    display: grid;
+    grid-template-columns: repeat(5, 28px);
+    gap: 4px;
+    margin-bottom: 1rem;
+}
+
+.breakout-block {
+    height: 15px;
+    border-radius: 2px;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3);
+    animation: blockShine 2s infinite;
+}
+
+@keyframes blockShine {
+    0%, 100% {
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.breakout-ball {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle at 30% 30%, #fff, #f0a000);
+    border-radius: 50%;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: ballBounce 1.5s ease-in-out infinite;
+}
+
+@keyframes ballBounce {
+    0%, 100% {
+        bottom: 40px;
+    }
+    50% {
+        bottom: 120px;
+    }
+}
+
+.breakout-paddle {
+    position: absolute;
+    width: 50px;
+    height: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    animation: paddleMove 2s ease-in-out infinite;
+}
+
+@keyframes paddleMove {
+    0%, 100% {
+        left: 40%;
+    }
+    50% {
+        left: 60%;
+    }
 }
 
 .tetris-blocks .tetris-block:nth-child(1) {
@@ -389,17 +510,6 @@ const closeGame = () => {
 .tetris-blocks .tetris-block:nth-child(7) {
     grid-column: 2 / 5;
     grid-row: 4;
-}
-
-@keyframes tetrisPulse {
-    0%, 100% {
-        transform: scale(1);
-        opacity: 0.8;
-    }
-    50% {
-        transform: scale(1.05);
-        opacity: 1;
-    }
 }
 
 .coming-soon-preview {
