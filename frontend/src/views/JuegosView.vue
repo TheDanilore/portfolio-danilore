@@ -51,12 +51,22 @@
                         </div>
                     </div>
 
-                    <!-- Placeholder Game 2 -->
-                    <div class="game-card coming-soon">
+                    <!-- Tetris Game -->
+                    <div class="game-card" @click="openGame('tetris')">
                         <div class="game-preview">
-                            <div class="coming-soon-preview">
-                                <IconComponent name="code" />
-                                <span>Próximamente</span>
+                            <div class="tetris-preview">
+                                <div class="tetris-blocks">
+                                    <div class="tetris-block" style="background: #00f0f0;"></div>
+                                    <div class="tetris-block" style="background: #f0f000;"></div>
+                                    <div class="tetris-block" style="background: #a000f0;"></div>
+                                    <div class="tetris-block" style="background: #00f000;"></div>
+                                    <div class="tetris-block" style="background: #f00000;"></div>
+                                    <div class="tetris-block" style="background: #0000f0;"></div>
+                                    <div class="tetris-block" style="background: #f0a000;"></div>
+                                </div>
+                            </div>
+                            <div class="play-overlay">
+                                <IconComponent name="arrow-right" :size="48" color="white" />
                             </div>
                         </div>
                         <div class="game-content">
@@ -67,6 +77,20 @@
                             <div class="game-tech">
                                 <span class="tech-tag">Vue.js 3</span>
                                 <span class="tech-tag">Canvas API</span>
+                            </div>
+                            <div class="game-features">
+                                <div class="feature">
+                                    <IconComponent name="arrow-up" :size="16" />
+                                    <span>Rotación de piezas</span>
+                                </div>
+                                <div class="feature">
+                                    <IconComponent name="arrow-down" :size="16" />
+                                    <span>Sistema de niveles</span>
+                                </div>
+                                <div class="feature">
+                                    <IconComponent name="download" :size="16" />
+                                    <span>Récords guardados</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -117,6 +141,7 @@
         <!-- Game Modal -->
         <GameModal :is-open="isGameModalOpen" @close="closeGame">
             <SnakeGame v-if="currentGame === 'snake'" />
+            <TetrisGame v-if="currentGame === 'tetris'" />
         </GameModal>
 
         <FooterSection />
@@ -132,6 +157,7 @@ import BackToTop from '@/components/ui/BackToTop.vue'
 import IconComponent from '@/components/icons/IconComponents.vue'
 import GameModal from '@/components/games/GameModal.vue'
 import SnakeGame from '@/components/games/SnakeGame.vue'
+import TetrisGame from '@/components/games/TetrisGame.vue'
 
 const isGameModalOpen = ref(false)
 const currentGame = ref(null)
@@ -304,6 +330,75 @@ const closeGame = () => {
 
     50% {
         transform: translateY(-20px);
+    }
+}
+
+.tetris-preview {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.tetris-blocks {
+    display: grid;
+    grid-template-columns: repeat(4, 40px);
+    grid-template-rows: repeat(4, 40px);
+    gap: 4px;
+    animation: tetrisPulse 2s infinite;
+}
+
+.tetris-block {
+    border-radius: 4px;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+.tetris-blocks .tetris-block:nth-child(1) {
+    grid-column: 1 / 5;
+    grid-row: 1;
+}
+
+.tetris-blocks .tetris-block:nth-child(2) {
+    grid-column: 1 / 3;
+    grid-row: 2 / 4;
+}
+
+.tetris-blocks .tetris-block:nth-child(3) {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.tetris-blocks .tetris-block:nth-child(4) {
+    grid-column: 3 / 5;
+    grid-row: 3;
+}
+
+.tetris-blocks .tetris-block:nth-child(5) {
+    grid-column: 4;
+    grid-row: 2;
+}
+
+.tetris-blocks .tetris-block:nth-child(6) {
+    grid-column: 1;
+    grid-row: 4;
+}
+
+.tetris-blocks .tetris-block:nth-child(7) {
+    grid-column: 2 / 5;
+    grid-row: 4;
+}
+
+@keyframes tetrisPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
     }
 }
 
