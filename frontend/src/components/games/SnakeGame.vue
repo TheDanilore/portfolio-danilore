@@ -20,6 +20,36 @@
 
         <canvas ref="gameCanvas" :width="canvasWidth" :height="canvasHeight"></canvas>
 
+        <!-- Mobile Controls -->
+        <div class="mobile-controls">
+            <div class="control-row">
+                <button class="control-btn control-up" @touchstart.prevent="handleTouch('up')" @mousedown.prevent="handleTouch('up')">
+                    <IconComponent name="arrow-up" :size="32" />
+                </button>
+            </div>
+            <div class="control-row">
+                <button class="control-btn control-left" @touchstart.prevent="handleTouch('left')" @mousedown.prevent="handleTouch('left')">
+                    <IconComponent name="arrow-left" :size="32" />
+                </button>
+                <button v-if="!gameStarted || gameOver" class="control-btn control-action" @click="gameStarted ? restartGame() : startGame()">
+                    <IconComponent name="play" :size="32" v-if="!gameStarted" />
+                    <span v-else style="font-size: 2rem;">↻</span>
+                </button>
+                <button v-else class="control-btn control-action" @click="togglePause">
+                    <IconComponent name="pause" :size="32" v-if="!isPaused" />
+                    <IconComponent name="play" :size="32" v-else />
+                </button>
+                <button class="control-btn control-right" @touchstart.prevent="handleTouch('right')" @mousedown.prevent="handleTouch('right')">
+                    <IconComponent name="arrow-right" :size="32" />
+                </button>
+            </div>
+            <div class="control-row">
+                <button class="control-btn control-down" @touchstart.prevent="handleTouch('down')" @mousedown.prevent="handleTouch('down')">
+                    <IconComponent name="arrow-down" :size="32" />
+                </button>
+            </div>
+        </div>
+
         <div v-if="gameOver" class="game-over-overlay">
             <div class="game-over-content">
                 <h2>¡Game Over!</h2>
@@ -36,7 +66,7 @@
         <div v-if="!gameStarted && !gameOver" class="start-overlay">
             <div class="start-content">
                 <h2>🐍 Snake Game</h2>
-                <p>Usa las flechas del teclado para moverte</p>
+                <p>Usa las flechas del teclado o los botones táctiles</p>
                 <p>¡Come la comida y sube de nivel!</p>
                 <div class="level-info-list">
                     <p><strong>Niveles de Dificultad:</strong></p>
@@ -51,7 +81,7 @@
                     Iniciar Juego
                 </button>
                 <div class="controls-info">
-                    <p><strong>←</strong> <strong>↑</strong> <strong>→</strong> <strong>↓</strong> = Mover</p>
+                    <p><strong>←</strong> <strong>↑</strong> <strong>→</strong> <strong>↓</strong> = Mover | <strong>Botones táctiles</strong> en móvil</p>
                     <p><strong>ESPACIO</strong> = Empezar</p>
                     <p><strong>P</strong> o <strong>ESC</strong> = Pausa</p>
                 </div>
@@ -100,12 +130,15 @@
         </div>
 
         <div class="controls-info">
-            <p>
+            <p class="desktop-controls">
                 <IconComponent name="arrow-up" :size="20" />
                 <IconComponent name="arrow-down" :size="20" />
                 <IconComponent name="arrow-left" :size="20" />
                 <IconComponent name="arrow-right" :size="20" />
                 Usa las flechas para moverte | <strong>P</strong> = Pausa
+            </p>
+            <p class="mobile-controls-info">
+                Usa los botones de dirección | Centro = Pausa/Jugar
             </p>
         </div>
     </div>
@@ -410,6 +443,21 @@ const handleKeyPress = (event) => {
     event.preventDefault()
 }
 
+const handleTouch = (dir) => {
+    if (!gameStarted.value || gameOver.value || isPaused.value) return
+    
+    // Evitar giro de 180 grados
+    if (dir === 'up' && direction.y === 0) {
+        nextDirection = { x: 0, y: -1 }
+    } else if (dir === 'down' && direction.y === 0) {
+        nextDirection = { x: 0, y: 1 }
+    } else if (dir === 'left' && direction.x === 0) {
+        nextDirection = { x: -1, y: 0 }
+    } else if (dir === 'right' && direction.x === 0) {
+        nextDirection = { x: 1, y: 0 }
+    }
+}
+
 onMounted(() => {
     initGame()
     window.addEventListener('keydown', handleKeyPress)
@@ -427,19 +475,19 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 1rem;
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     min-height: 100vh;
     width: 100%;
     height: 100%;
     position: relative;
     box-sizing: border-box;
+    gap: 1rem;
 }
 
 .game-info {
     width: 100%;
     max-width: 600px;
-    margin-bottom: 1rem;
 }
 
 .score-board {
@@ -448,10 +496,11 @@ onUnmounted(() => {
     align-items: center;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    padding: 1rem 2rem;
+    padding: 0.8rem 1.5rem;
     border-radius: 15px;
     color: white;
-    gap: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .score,
@@ -464,12 +513,12 @@ onUnmounted(() => {
 }
 
 .label {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     opacity: 0.8;
 }
 
 .value {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 700;
     font-family: 'Courier New', monospace;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -483,11 +532,11 @@ onUnmounted(() => {
 }
 
 .level-value {
-    font-size: 2.5rem;
+    font-size: 2rem;
 }
 
 .level-name {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     opacity: 0.9;
     color: #f093fb;
     font-weight: 600;
@@ -498,8 +547,57 @@ canvas {
     border: 4px solid rgba(255, 255, 255, 0.2);
     border-radius: 10px;
     box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
-    max-width: 90vmin;
-    max-height: 60vh;
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Mobile Controls */
+.mobile-controls {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.control-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.control-btn {
+    width: 70px;
+    height: 70px;
+    background: rgba(102, 126, 234, 0.3);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(102, 126, 234, 0.5);
+    border-radius: 15px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.control-btn:active {
+    background: rgba(102, 126, 234, 0.6);
+    transform: scale(0.95);
+}
+
+.control-action {
+    background: rgba(118, 75, 162, 0.4);
+    border-color: rgba(118, 75, 162, 0.6);
+}
+
+.control-action:active {
+    background: rgba(118, 75, 162, 0.7);
 }
 
 .game-over-overlay,
@@ -656,42 +754,159 @@ canvas {
 /* Responsive */
 @media (max-width: 768px) {
     .snake-game {
-        padding: 1rem;
+        padding: 0.5rem;
+        gap: 0.5rem;
     }
 
     .game-info {
         max-width: 100%;
     }
 
-    canvas {
-        max-width: 95vw;
-        max-height: 50vh;
+    .score-board {
+        padding: 0.6rem 1rem;
+        gap: 0.8rem;
+        font-size: 0.9rem;
     }
 
-    .score-board {
-        padding: 0.8rem 1rem;
-        gap: 1rem;
+    .label {
+        font-size: 0.7rem;
     }
 
     .value {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
     }
 
     .level-value {
-        font-size: 2rem;
+        font-size: 1.5rem;
+    }
+
+    .level-name {
+        font-size: 0.65rem;
+    }
+
+    canvas {
+        max-width: 100%;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    /* Show mobile controls */
+    .mobile-controls {
+        display: flex;
+    }
+
+    .desktop-controls {
+        display: none !important;
+    }
+
+    .mobile-controls-info {
+        display: flex !important;
     }
 
     .game-over-content h2,
-    .start-content h2 {
+    .start-content h2,
+    .pause-content h2 {
         font-size: 2rem;
     }
 
+    .game-over-content,
+    .start-content,
+    .pause-content {
+        padding: 1rem;
+        max-width: 90%;
+    }
+
     .start-content p {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
     .level-info-list {
         padding: 0.8rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .level-info-list li {
+        font-size: 0.8rem;
+    }
+
+    .restart-btn,
+    .start-btn,
+    .resume-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .controls-info {
+        font-size: 0.8rem;
+    }
+
+    .final-score,
+    .level-reached {
+        font-size: 1.2rem;
+    }
+
+    .new-record {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .score-board {
+        padding: 0.5rem 0.8rem;
+        gap: 0.5rem;
+    }
+
+    .label {
+        font-size: 0.65rem;
+    }
+
+    .value {
+        font-size: 1rem;
+    }
+
+    .level-value {
+        font-size: 1.3rem;
+    }
+
+    .control-btn {
+        width: 60px;
+        height: 60px;
+    }
+
+    .game-over-content h2,
+    .start-content h2,
+    .pause-content h2 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+    .snake-game {
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 0.5rem;
+    }
+
+    .game-info {
+        order: -1;
+        max-width: 200px;
+    }
+
+    canvas {
+        max-height: 80vh;
+        max-width: 80vh;
+    }
+
+    .mobile-controls {
+        margin-top: 0;
+        max-width: 200px;
+    }
+
+    .control-btn {
+        width: 50px;
+        height: 50px;
     }
 }
 </style>
