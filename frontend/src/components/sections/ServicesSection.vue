@@ -31,23 +31,33 @@ const services = [
   {
     icon: 'code',
     title: 'Desarrollo Web',
-    description: 'Creación de sitios web modernos, responsivos y optimizados para SEO utilizando las últimas tecnologías.'
+    description:
+      'Creación de sitios web modernos, responsivos y optimizados para SEO utilizando las últimas tecnologías.',
   },
   {
-    icon: 'smartphone',
-    title: 'Diseño Responsivo',
-    description: 'Diseño de interfaces que se adaptan perfectamente a todos los dispositivos y tamaños de pantalla.'
+    icon: 'cloud-devops',
+    title: 'Soluciones Cloud & DevOps',
+    description:
+      'Despliegue de aplicaciones en la nube (OCI), configuración de servidores Linux y contenerización con Docker para alta disponibilidad.',
   },
   {
     icon: 'server',
-    title: 'Integración CRM',
-    description: 'Desarrollo e integración de soluciones personalizadas para Salesforce, Odoo y otros sistemas CRM.'
+    title: 'Integración CRM y Automatización',
+    description:
+      'Conexión de ERPs (Odoo, Salesforce) mediante APIs REST y Middlewares personalizados para optimizar flujos de trabajo.',
   },
   {
     icon: 'database',
     title: 'Desarrollo Backend',
-    description: 'Creación de APIs robustas, bases de datos optimizadas y lógica de negocio eficiente para aplicaciones web.'
-  }
+    description:
+      'Creación de APIs robustas, bases de datos optimizadas y lógica de negocio eficiente para aplicaciones web.',
+  },
+  {
+    icon: 'analytics',
+    title: 'Analítica de Datos & ETL',
+    description:
+      'Transformación de datos, creación de pipelines ETL y dashboards para inteligencia de negocio.',
+  },
 ]
 </script>
 

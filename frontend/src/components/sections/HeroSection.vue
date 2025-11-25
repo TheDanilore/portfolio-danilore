@@ -5,7 +5,7 @@
         <div class="hero-text">
           <h1 class="fade-in">Hola, soy <span class="highlight">Lorenzo Arteaga</span></h1>
           <h2 class="typewriter">{{ typedText }}<span class="cursor">|</span></h2>
-          <p>Especializado en el desarrollo Front-End y Back-End, e integraciones con CRM.</p>
+          <p>Diseño arquitecturas escalables, integro sistemas complejos (ERP/CRM) y transformo datos en soluciones de negocio.</p>
           <div class="hero-buttons">
             <a href="#proyectos" class="btn btn-primary">Ver Proyectos</a>
             <a href="#contacto" class="btn btn-outline">Contáctame</a>
@@ -36,7 +36,7 @@ import { useWindowScroll } from '@vueuse/core'
 import Avatar3D from '../Avatar3D.vue'
 
 const typedText = ref('')
-const fullText = 'Software Developer'
+const fullText = 'Software Developer | Cloud & Data Enthusiast'
 let charIndex = 0
 
 const { y: scrollY } = useWindowScroll()
@@ -108,7 +108,7 @@ onUnmounted(() => {
 }
 
 .typewriter {
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-size: clamp(1rem, 3vw, 1.5rem);
   font-weight: 600;
   color: var(--primary-color);
   margin-bottom: 1rem;

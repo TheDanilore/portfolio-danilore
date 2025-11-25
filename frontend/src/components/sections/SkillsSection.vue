@@ -8,8 +8,8 @@
 
       <div class="skills-content">
         <p class="skills-intro">
-          Cuento con experiencia en diversas tecnologías y herramientas para el desarrollo de aplicaciones web,
-          escritorio y móvil.
+          Cuento con experiencia en diversas tecnologías y herramientas para el desarrollo de
+          aplicaciones web, escritorio y móvil.
         </p>
 
         <div class="skills-grid">
@@ -35,9 +35,16 @@ const skills = [
   { name: 'HTML5', icon: '/assets/images/skills/html5_logo.svg' },
   { name: 'CSS3', icon: '/assets/images/skills/css-3_logo.svg' },
   { name: 'JavaScript', icon: '/assets/images/skills/javascript_logo.svg' },
+  { name: 'Python', icon: '/assets/images/skills/python_logo.svg' },
   { name: 'React', icon: '/assets/images/skills/React_dark_logo.svg' },
   { name: 'Laravel', icon: '/assets/images/skills/laravel_logo.svg' },
   { name: 'Vue.js', icon: '/assets/images/skills/vue_logo.svg' },
+  { name: 'Oracle OCI', icon: '/assets/images/skills/oracle-oci-2025.svg' },
+  { name: 'Flutter', icon: '/assets/images/skills/flutter_logo.svg' },
+  { name: 'Astro', icon: '/assets/images/skills/astro_logo.svg' },
+  { name: 'Django', icon: '/assets/images/skills/django_logo.svg' },
+  { name: 'FastAPI', icon: '/assets/images/skills/fastapi_logo.svg' },
+  { name: 'Node.js', icon: '/assets/images/skills/nodejs_logo.svg' },
   { name: 'Java', icon: '/assets/images/skills/java_logo.svg' },
   { name: 'Spring Boot', icon: '/assets/images/skills/spring_logo.svg' },
   { name: 'Docker', icon: '/assets/images/skills/docker_logo.svg' },
@@ -45,13 +52,14 @@ const skills = [
   { name: 'TailwindCSS', icon: '/assets/images/skills/tailwindcss_logo.svg' },
   { name: 'MySQL', icon: '/assets/images/skills/mysql_logo.svg' },
   { name: 'Postman', icon: '/assets/images/skills/postman_logo.svg' },
-  { name: 'Salesforce', icon: '/assets/images/skills/salesforce_logo.svg' }
+  { name: 'Salesforce', icon: '/assets/images/skills/salesforce_logo.svg' },
+  { name: 'Linux', icon: '/assets/images/skills/linux_logo.svg' },
 ]
 </script>
 
 <style scoped>
 .skills {
-    background: var(--bg-secondary);
+  background: var(--bg-secondary);
 }
 
 .section-padding {
@@ -156,7 +164,7 @@ const skills = [
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     gap: 1.5rem;
   }
-  
+
   .skill-icon {
     width: 60px;
     height: 60px;

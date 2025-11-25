@@ -308,5 +308,28 @@ defineProps({
     <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
   </svg>
 
+  <svg v-else-if="name === 'cloud-devops'" :width="size" :height="size" viewBox="0 0 24 24" fill="none" :stroke="color"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+    <circle cx="12" cy="14" r="2"></circle>
+    <path d="M12 10v8"></path>
+    <path d="M10 12h4"></path>
+  </svg>
+
+  <svg v-else-if="name === 'analytics'" :width="size" :height="size" viewBox="0 0 24 24" fill="none" :stroke="color"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="3" y1="3" x2="3" y2="21"></line>
+    <line x1="3" y1="21" x2="21" y2="21"></line>
+    <path d="M7 12l4-4 4 4 5-5"></path>
+    <circle cx="12" cy="12" r="1"></circle>
+    <circle cx="7" cy="16" r="1"></circle>
+    <circle cx="15" cy="8" r="1"></circle>
+  </svg>
+
+  <svg v-else-if="name === 'credly'" :width="size" :height="size" viewBox="0 0 24 24" fill="none" :stroke="color"
+    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2L3 8v8c0 5.5 4 10.7 9 12 5-1.3 9-6.5 9-12V8l-9-6z"></path>
+    <path d="M10 14l2 2 4-4"></path>
+  </svg>
 
 </template>

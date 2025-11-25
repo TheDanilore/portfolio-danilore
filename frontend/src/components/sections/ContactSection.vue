@@ -10,8 +10,8 @@
         <div class="contact-info">
           <h3>¿Tienes un proyecto en mente?</h3>
           <p>
-            Siempre estoy abierto a nuevas oportunidades de aprendizaje y colaboración. Si tienes un proyecto
-            interesante o quieres intercambiar ideas, ¡no dudes en contactarme! 📩
+            Siempre estoy abierto a nuevas oportunidades de aprendizaje y colaboración. Si tienes un
+            proyecto interesante o quieres intercambiar ideas, ¡no dudes en contactarme! 📩
           </p>
 
           <div class="contact-details">
@@ -31,7 +31,11 @@
               </div>
               <div class="contact-text">
                 <h4>Github</h4>
-                <p><a href="https://github.com/TheDanilore" target="_blank">github.com/TheDanilore</a></p>
+                <p>
+                  <a href="https://github.com/TheDanilore" target="_blank"
+                    >github.com/TheDanilore</a
+                  >
+                </p>
               </div>
             </div>
 
@@ -58,7 +62,25 @@
               </div>
               <div class="contact-text">
                 <h4>Youtube</h4>
-                <p><a href="https://www.youtube.com/@TheDanilore" target="_blank">@TheDanilore</a></p>
+                <p>
+                  <a href="https://www.youtube.com/@TheDanilore" target="_blank">@TheDanilore</a>
+                </p>
+              </div>
+            </div>
+
+            <div class="contact-item">
+              <div class="contact-icon">
+                <IconComponent name="credly" :size="20" />
+              </div>
+              <div class="contact-text">
+                <h4>Credly</h4>
+                <p>
+                  <a
+                    href="https://www.credly.com/users/lorenzo-daniel-arteaga-gordillo.8973a840"
+                    target="_blank"
+                    >lorenzo-daniel-arteaga-gordillo</a
+                  >
+                </p>
               </div>
             </div>
           </div>
@@ -74,12 +96,12 @@
           >
             <div class="form-group">
               <label for="name">Nombre</label>
-              <input 
-                v-model="formData.name" 
-                type="text" 
-                id="name" 
-                name="name" 
-                required 
+              <input
+                v-model="formData.name"
+                type="text"
+                id="name"
+                name="name"
+                required
                 :class="{ 'error-input': errors.name }"
               />
               <div v-if="errors.name" class="error-message">{{ errors.name }}</div>
@@ -87,12 +109,12 @@
 
             <div class="form-group">
               <label for="email">Email</label>
-              <input 
-                v-model="formData.email" 
-                type="email" 
-                id="email" 
-                name="email" 
-                required 
+              <input
+                v-model="formData.email"
+                type="email"
+                id="email"
+                name="email"
+                required
                 :class="{ 'error-input': errors.email }"
               />
               <div v-if="errors.email" class="error-message">{{ errors.email }}</div>
@@ -100,12 +122,12 @@
 
             <div class="form-group">
               <label for="subject">Asunto</label>
-              <input 
-                v-model="formData.subject" 
-                type="text" 
-                id="subject" 
-                name="subject" 
-                required 
+              <input
+                v-model="formData.subject"
+                type="text"
+                id="subject"
+                name="subject"
+                required
                 :class="{ 'error-input': errors.subject }"
               />
               <div v-if="errors.subject" class="error-message">{{ errors.subject }}</div>
@@ -113,19 +135,19 @@
 
             <div class="form-group">
               <label for="message">Mensaje</label>
-              <textarea 
-                v-model="formData.message" 
-                id="message" 
-                name="message" 
-                rows="5" 
+              <textarea
+                v-model="formData.message"
+                id="message"
+                name="message"
+                rows="5"
                 required
                 :class="{ 'error-input': errors.message }"
               ></textarea>
               <div v-if="errors.message" class="error-message">{{ errors.message }}</div>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               class="btn btn-primary btn-submit g-recaptcha"
               data-sitekey="6Ld3Vu0qAAAAAL6GFTQnL6velqTQfQZFPKP_hkcj"
               data-callback="onSubmit"
@@ -139,7 +161,9 @@
               </span>
             </button>
 
-            <p v-if="submitMessage" :class="['submit-message', submitStatus]">{{ submitMessage }}</p>
+            <p v-if="submitMessage" :class="['submit-message', submitStatus]">
+              {{ submitMessage }}
+            </p>
           </form>
         </div>
       </div>
@@ -155,14 +179,14 @@ const formData = ref({
   name: '',
   email: '',
   subject: '',
-  message: ''
+  message: '',
 })
 
 const errors = ref({
   name: '',
   email: '',
   subject: '',
-  message: ''
+  message: '',
 })
 
 const isSubmitting = ref(false)
@@ -209,7 +233,7 @@ const validateForm = () => {
 // Manejar envío del formulario
 const handleSubmit = async (e) => {
   e.preventDefault()
-  
+
   // Validar antes de enviar
   if (!validateForm()) {
     return
@@ -226,15 +250,15 @@ const handleSubmit = async (e) => {
       method: formElement.method,
       body: formDataToSend,
       headers: {
-        Accept: 'application/json'
-      }
+        Accept: 'application/json',
+      },
     })
 
     if (response.ok) {
       submitMessage.value = '✅ Se envió correctamente. ¡Gracias por contactarme!'
       submitStatus.value = 'success'
       formData.value = { name: '', email: '', subject: '', message: '' }
-      
+
       // Ocultar mensaje después de 5 segundos
       setTimeout(() => {
         submitMessage.value = ''
@@ -242,7 +266,7 @@ const handleSubmit = async (e) => {
     } else {
       const data = await response.json()
       if (data.errors) {
-        submitMessage.value = '❌ ' + data.errors.map(error => error.message).join(', ')
+        submitMessage.value = '❌ ' + data.errors.map((error) => error.message).join(', ')
       } else {
         submitMessage.value = '❌ Ocurrió un problema al enviar el formulario'
       }
@@ -259,7 +283,7 @@ const handleSubmit = async (e) => {
 
 // Configurar callback de reCAPTCHA global
 onMounted(() => {
-  window.onSubmit = function() {
+  window.onSubmit = function () {
     const contactForm = document.getElementById('contact-form')
     if (contactForm) {
       const submitEvent = new Event('submit', { bubbles: true, cancelable: true })

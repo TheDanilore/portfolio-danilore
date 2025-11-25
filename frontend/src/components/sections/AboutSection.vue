@@ -16,14 +16,14 @@
         <div class="about-text">
           <h3>Software Developer</h3>
           <p>
-            ¡Hola! Soy Lorenzo Daniel, desarrollador de Software con más de 4 años de experiencia en diseño y
-            desarrollo de aplicaciones de escritorio, web y móviles. Me especializo en el desarrollo Front-End,
-            Back-End, e integraciones con CRM como Salesforce y Odoo.
+            Más allá del código, mi enfoque está en la arquitectura de software. Soy un Ingeniero de
+            Sistemas en formación con +4 años de experiencia conectando el desarrollo Full Stack con
+            la automatización operativa.
           </p>
           <p>
-            Actualmente, curso el X ciclo de Ingeniería de Sistemas e Informática. Mi objetivo profesional es crecer
-            en el campo del desarrollo de software, contribuyendo en proyectos innovadores y desafiantes que impulsen
-            la innovación tecnológica.
+            Recientemente certificado como OCI Foundations Associate 2025, combino la agilidad de
+            Laravel 12 y Vue.js con la potencia del análisis de datos (ETL/Python) para crear
+            ecosistemas digitales robustos.
           </p>
           <a href="/assets/docs/CV - ARTEAGA GORDILLO LORENZO.pdf" class="btn btn-primary" download>
             <i class="fas fa-download"></i> Descargar CV
@@ -34,8 +34,7 @@
   </section>
 </template>
 
-<script setup>
-</script>
+<script setup></script>
 
 <style scoped>
 .about {
@@ -188,7 +187,6 @@
 }
 
 @keyframes float {
-
   0%,
   100% {
     transform: translateY(0);
