@@ -76,7 +76,6 @@ frontend/
 ├── src/
 │   ├── assets/         # Recursos estáticos (imágenes, estilos)
 │   ├── components/     # Componentes Vue reutilizables
-│   │   ├── SplashScreen.vue       # Animación de inicio
 │   │   ├── CatNavigator.vue       # Gatito navegador
 │   │   └── Avatar3D.vue           # Avatar 3D
 │   ├── views/          # Vistas principales

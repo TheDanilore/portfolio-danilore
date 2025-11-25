@@ -1,34 +1,15 @@
 <script setup>
-import { ref, onMounted } from 'vue'
 import { RouterView } from 'vue-router'
-import SplashScreen from './components/SplashScreen.vue'
 import CatNavigator from './components/CatNavigator.vue'
-
-const showSplash = ref(true)
-
-const handleSplashComplete = () => {
-  showSplash.value = false
-}
-
-// Si el usuario ya visitó, no mostrar splash
-onMounted(() => {
-  const visited = sessionStorage.getItem('portfolio-visited')
-  if (visited) {
-    showSplash.value = false
-  }
-})
 </script>
 
 <template>
   <div id="app">
     <!-- Contenido principal del portfolio (siempre renderizado) -->
-    <div class="main-content" :class="{ 'content-visible': !showSplash }">
+    <div class="main-content">
       <RouterView />
-      <CatNavigator v-if="!showSplash" />
+      <CatNavigator />
     </div>
-
-    <!-- Splash Screen con animación de inicio (encima del contenido) -->
-    <SplashScreen v-if="showSplash" @animation-complete="handleSplashComplete" />
   </div>
 </template>
 
