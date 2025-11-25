@@ -72,26 +72,4 @@ body {
 #app {
   min-height: 100vh;
 }
-
-/* Contenido principal */
-.main-content {
-  position: relative;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.main-content.content-visible {
-  pointer-events: auto;
-}
-
-/* Transición fade */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 </style>
